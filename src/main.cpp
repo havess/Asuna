@@ -5,11 +5,9 @@
 //
 
 #include <iostream>
-
+#include <SDL2/SDL.h>
 
 int main(int argc, const char * argv[]) {
-  SDL_init(SDL_INIT_EVERYTHING);
-  SDL_Quit();
-  return 0;
+   return 0;
 }
 

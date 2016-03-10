@@ -8,8 +8,8 @@
 
 #include <iostream>
 #include <SDL2/SDL.h>
-#include <GL/glew.h>
-#include "Display.hpp"
+//#include <GL/glew.h>
+#include "../includes/Asuna/Display.hpp"
 
 Display::Display(const glm::vec2& size, const std::string& title)
 {
@@ -28,11 +28,11 @@ Display::Display(const glm::vec2& size, const std::string& title)
     m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, size.x, size.y, SDL_WINDOW_OPENGL);
     m_glContext = SDL_GL_CreateContext(m_window);
     
-    GLenum status = glewInit();
+//    GLenum status = glewInit();
     
-    if(status != GLEW_OK){
-        std::cerr << "Glew could not be initialize" <<std::endl;
-    }
+  //  if(status != GLEW_OK){
+    //    std::cerr << "Glew could not be initialize" <<std::endl;
+   // }
     
     m_isClosed = false;
     m_aspectRatio = (float) size.x/size.y;
@@ -50,8 +50,8 @@ bool Display::isClosed() const{
 }
 
 void Display::clear(float r, float g, float b, float a){
-    glClearColor(r, g, b, a);
-    glClear(GL_COLOR_BUFFER_BIT);
+   // glClearColor(r, g, b, a);
+   // glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void Display::update()

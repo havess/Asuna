@@ -4,7 +4,7 @@ CC = g++
 
 COMPILER_FLAGS = -w
 
-LINKER_FLAGS = -L/usr/local/lib -lSDL2
+LINKER_FLAGS = -I/usr/local/include -L/usr/local/lib -lSDL2main -lSDL2 
 
 OBJ_NAMES = Asuna
 
