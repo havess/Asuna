@@ -6,7 +6,7 @@
 //  Copyright © 2016 Sam Haves. All rights reserved.
 //
 
-#include "QuickHull.hpp"
+#include "../includes/Asuna/QuickHull.hpp"
 #include <stack>
 #include <unordered_map>
 
@@ -20,7 +20,7 @@ std::vector<HE_Face> makePyramid(std::shared_ptr<HE_Face> triBase, std::shared_p
 void iterateHull(std::vector<HE_Face>& hullFaces);
 
 long int key = 0;
-std::unordered_map<long int, std::vector<HE_Vert>> facePoints;
+std::unordered_map<long int, std::vector<HE_Vert> > facePoints;
 
 QuickHull::QuickHull(glm::vec3* points, int numVertices){
     m_vertices = new HE_Vert[numVertices];
@@ -37,20 +37,20 @@ QuickHull::~QuickHull(){
 void QuickHull::genHull(){
     HE_Vert* maxes = getMax(m_vertices, m_numVertices);
     std::pair<HE_Vert, HE_Vert> mostDist = mostDistantPoints(maxes, 6);
-    
+
     HE_Vert thirdPoint = mostDistantFromLine(maxes, 6, mostDist.first, mostDist.second);
-    
+
     auto edge1 = std::make_shared<HalfEdge>();
     auto edge2 = std::make_shared<HalfEdge>();
     auto edge3 = std::make_shared<HalfEdge>();
     edge1->origin = std::make_shared<HE_Vert>(mostDist.first);
     edge2->origin = std::make_shared<HE_Vert>(mostDist.second);
     edge3->origin = std::make_shared<HE_Vert>(thirdPoint);
-    
+
     auto triBase = std::make_shared<HE_Face>();
     triBase = makeTriFace(edge1, edge2, edge3);
     auto apex = std::make_shared<HE_Vert>(mostDistantFromPlane(m_vertices, m_numVertices, *triBase));
-    
+
     m_hullFaces = makePyramid(triBase, apex);
     //assign pyramid apex outgoing edge half edges pairs
     std::shared_ptr<HalfEdge> edge = triBase->edge;
@@ -59,11 +59,11 @@ void QuickHull::genHull(){
         edge->next->pair->next->pair = edge->pair->previous;
         edge = edge->next;
     }
-    
+
     for(std::vector<HE_Face>::iterator iter = m_hullFaces.begin(); iter != m_hullFaces.end(); ++iter){
-        facePoints.insert(std::pair<long int, std::vector<HE_Vert>>(iter->id, std::vector<HE_Vert>()));
+        facePoints.insert(std::pair<long int, std::vector<HE_Vert> >(iter->id, std::vector<HE_Vert>()));
     }
-    
+
     bool *assigned = new bool[m_numVertices];
     for(int i = 0; i < m_numVertices; i++){
         assigned[i] = false;
@@ -83,8 +83,8 @@ void QuickHull::genHull(){
     //iterateHull();
 }
 
-std::vector<std::shared_ptr<HE_Face>> extrudeToPoint(HE_Vert& apex, std::vector<std::shared_ptr<HE_Vert>> verts, std::vector<std::shared_ptr<HalfEdge>> pairs){
-    std::vector<std::shared_ptr<HE_Face>> rVec;
+std::vector<std::shared_ptr<HE_Face> > extrudeToPoint(HE_Vert& apex, std::vector<std::shared_ptr<HE_Vert> > verts, std::vector<std::shared_ptr<HalfEdge> > pairs){
+    std::vector<std::shared_ptr<HE_Face> > rVec;
     unsigned int j = 0;
     for(unsigned int i = 0; i < verts.size(); i++){
         auto edge1 = std::make_shared<HalfEdge>();
@@ -97,7 +97,7 @@ std::vector<std::shared_ptr<HE_Face>> extrudeToPoint(HE_Vert& apex, std::vector<
         edge3->origin = std::make_shared<HE_Vert>(apex);
         auto face = makeTriFace(edge1, edge2, edge3);
         rVec.push_back(face);
-        facePoints.insert(std::pair<long int, std::vector<HE_Vert>>(face->id, std::vector<HE_Vert>()));
+        facePoints.insert(std::pair<long int, std::vector<HE_Vert> >(face->id, std::vector<HE_Vert>()));
         j++;
     }
     for(unsigned int i = 0; i < rVec.size(); i++){
@@ -106,7 +106,7 @@ std::vector<std::shared_ptr<HE_Face>> extrudeToPoint(HE_Vert& apex, std::vector<
     }
     return rVec;
 }
-std::stack<std::shared_ptr<HE_Face>> faces;
+std::stack<std::shared_ptr<HE_Face> > faces;
 void QuickHull::iterateHull(){
     for(std::vector<HE_Face>::iterator iter = m_hullFaces.begin(); iter != m_hullFaces.end(); ++iter){
         if(facePoints[iter->id].size() > 0) faces.push(std::make_shared<HE_Face>(*iter));
@@ -117,8 +117,8 @@ void QuickHull::iterateHull(){
         faces.pop();
         auto farthestPoint = std::make_shared<HE_Vert>(mostDistantFromPlane(&facePoints[face->id][0], facePoints[face->id].size(), *face));
         auto edge = face->edge;
-        std::vector<std::shared_ptr<HE_Vert>> extrudeVertices;
-        std::vector<std::shared_ptr<HalfEdge>> pairs;
+        std::vector<std::shared_ptr<HE_Vert> > extrudeVertices;
+        std::vector<std::shared_ptr<HalfEdge> > pairs;
         do{
             extrudeVertices.push_back(edge->origin);
             if(glm::dot(edge->pair->face->normal, farthestPoint->position - edge->pair->origin->position) > 0){
@@ -131,15 +131,15 @@ void QuickHull::iterateHull(){
             }
             edge = edge->next;
         }while(edge != face->edge);
-        
-        std::vector<std::shared_ptr<HE_Face>> extrudedFaces = extrudeToPoint(*farthestPoint, extrudeVertices, pairs);
-        
+
+        std::vector<std::shared_ptr<HE_Face> > extrudedFaces = extrudeToPoint(*farthestPoint, extrudeVertices, pairs);
+
         bool *assigned = new bool[facePoints[face->id].size()];
         for(int i = 0; i < facePoints[face->id].size(); i++){
             assigned[i] = false;
         }
         unsigned int i = 0;
-        for(std::vector<std::shared_ptr<HE_Face>>::iterator iter2 = extrudedFaces.begin(); iter2 != extrudedFaces.end(); ++iter2){
+        for(std::vector<std::shared_ptr<HE_Face> >::iterator iter2 = extrudedFaces.begin(); iter2 != extrudedFaces.end(); ++iter2){
             std::shared_ptr<HE_Face> curFace = *iter2;
             std::cout << "NUMBER OF NEW FACES: "<< extrudedFaces.size()<< std::endl;
             glm::vec3 normal = curFace->normal;
@@ -161,7 +161,7 @@ void QuickHull::iterateHull(){
         facePoints.erase(face->id);
     }
     facePoints.clear();
-    
+
 }
 
 
@@ -207,17 +207,17 @@ std::vector<HE_Face> makePyramid(std::shared_ptr<HE_Face> triBase, std::shared_p
         pair->origin = edge->next->origin;
         apexToV1->origin = apex;
         v0ToApex->origin = edge->origin;
-        
+
         //ordering is important, just trust me on this one
         edge->pair = std::shared_ptr<HalfEdge>(pair);
         pair->pair = edge;
         faces.push_back(*makeTriFace(pair, v0ToApex, apexToV1));
         edge = edge->next;
-        
+
     }while(edge != triBase->edge);
     faces.push_back(*triBase);
     return faces;
-    
+
 }
 
 double getDistanceFromLine(const glm::vec3& point, const glm::vec3& p1, const glm::vec3& p2){
@@ -284,5 +284,3 @@ HE_Vert mostDistantFromPlane(HE_Vert* vertices, unsigned long int numVerts, HE_F
     }
     return rVert;
 }
-
-
