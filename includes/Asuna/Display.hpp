@@ -14,6 +14,9 @@
 #include "glm/glm.hpp"
 #include <string>
 
+#include "Transform.hpp"
+#include "Camera.hpp"
+
 #if !defined(DISPLAY_CONSTANTS)
 #define DISPLAY_CONSTANTS
 
@@ -23,31 +26,37 @@
 
 class Display{
 public:
-    
-    
+
     Display(const glm::vec2& size, const std::string& title);
     virtual ~Display();
-    
+
     void update();
     void clear(float r, float g, float b, float a);
     bool isClosed() const;
-    
-    inline glm::vec2* getSize(){return &m_size;}
-    inline float* getAspectRatio(){return &m_aspectRatio;}
-    
-    
+
+    inline void bindWorldMatrix(Transform& worldMat){m_worldMat = worldMat;}
+    inline void bindCamera(Camera& camera){m_camera = camera;}
+    inline glm::vec2 getSize() const{return m_size;}
+    inline float getAspectRatio() const{return m_aspectRatio;}
+
+
 protected:
 private:
-    
+
     Display(const Display& other){}
     void operator=(const Display& other){}
-    
+
+    void handleInput();
+
     SDL_Window* m_window;
     glm::vec2 m_size;
     SDL_GLContext m_glContext;
     float m_aspectRatio;
     bool m_isClosed;
-    
+
+    Transform m_worldMat;
+    Camera m_camera;
+
 };
 
 #endif /* Display_hpp */

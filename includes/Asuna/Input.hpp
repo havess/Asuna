@@ -16,9 +16,9 @@
 class Input{
 public:
     void applyKeyPresses(Transform& transform, Camera& camera){
-        
+
         const Uint8 *state = SDL_GetKeyboardState(NULL);
-        
+
         if(state[SDL_SCANCODE_RIGHT] && state[SDL_SCANCODE_SPACE]){
             transform.getRot().z += 0.05f;
         }else if (state[SDL_SCANCODE_RIGHT]) {
@@ -36,14 +36,12 @@ public:
             transform.getRot().x += 0.05f;
         }
         if (state[SDL_SCANCODE_Z]) {
-            transform.getPos() += 0.04f * *camera.getForward();
+            transform.getPos() += 0.04f * camera.getForward();
         }
         if (state[SDL_SCANCODE_X]) {
-            transform.getPos() -= 0.04f * *camera.getForward();
+            transform.getPos() -= 0.04f * camera.getForward();
         }
-        
+
     }
-protected:
-private:
 };
 #endif /* Input_hpp */
