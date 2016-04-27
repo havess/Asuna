@@ -9,8 +9,9 @@
 #include <stdio.h>
 #include <iostream>
 
-#include "../includes/Asuna/Geometry.hpp"
-
+#include "../includes/Asuna/Geometry/Geometry.hpp"
+#include "../includes/Asuna/Geometry/Sphere.hpp"
+namespace Asuna{
 void IcoSphereGenerator::genVertices(){
 
     std::vector<TriangleFace> faces = getIcosahedronFaces();
@@ -161,4 +162,5 @@ Sphere::Sphere(glm::vec3 position, const float radius): Geometry(position){
 
 void Sphere::genMesh(){
     m_mesh = std::shared_ptr<Mesh>(new Mesh(&m_icoGen.getVertices()[0], (int) m_icoGen.getNumVertices(), GL_TRIANGLES));
+}
 }

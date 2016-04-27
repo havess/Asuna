@@ -1,20 +1,20 @@
 //
 //  Transform.hpp
-//  OpenGLTut
+//  Asuna
 //
-//  Created by Sam Haves on 2015-12-21.
 //  Copyright © 2015 Sam Haves. All rights reserved.
 //
 
-#ifndef Transform_hpp
-#define Transform_hpp
+#pragma once
 
-#include <stdio.h>
+#include <iostream>
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
 
 typedef glm::mat4 mat4;
 typedef glm::vec3 vec3;
+
+namespace Asuna{
 
 class Transform{
 public:
@@ -46,4 +46,4 @@ private:
     vec3 m_rot;
     vec3 m_scale;
 };
-#endif /* Transform_hpp */
+}

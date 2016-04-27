@@ -1,18 +1,18 @@
 //
 //  Mesh.hpp
-//  OpenGLTut
+//  Asuna
 //
-//  Created by Sam Haves on 2015-12-18.
 //  Copyright © 2015 Sam Haves. All rights reserved.
 //
 
-#ifndef Mesh_hpp
-#define Mesh_hpp
+#pragma once
 
-#include <stdio.h>
+#include <iostream>
 #include <string>
-#include <GL/glew.h>
 #include "glm/glm.hpp"
+#include <GL/glew.h>
+
+namespace Asuna{
 
 struct HalfEdge;
 struct HE_Vert;
@@ -24,19 +24,19 @@ public:
         m_pos = pos;
         m_textCoord = texCoord;
     }
-    
+
     void normalize();
-    
+
     inline glm::vec3* getPos(){
         return &m_pos;
     }
-    
+
     inline void setPos(glm::vec3 pos){m_pos =pos;};
-    
+
     inline glm::vec2* getTextCoord(){
         return &m_textCoord;
     }
-    
+
 protected:
 private:
     glm::vec3 m_pos;
@@ -71,16 +71,15 @@ public:
 protected:
 private:
     static const unsigned int NUM_BUFFERS = 2;
-    
+
     enum{
         POSITION_VB,
         TEXTCOORD_VB
     };
-    
+
     GLuint m_vertexArrayObject;
     GLuint m_vertexArrayBuffers[NUM_BUFFERS];
     unsigned int m_drawCount;
     GLenum m_drawType;
 };
-
-#endif /* Mesh_hpp */
+}

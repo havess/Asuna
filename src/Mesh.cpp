@@ -12,7 +12,7 @@
 
 
 
-
+namespace Asuna{
 Mesh::Mesh(Vertex* vertices, unsigned int numVertices, GLenum drawType){
 
     m_drawCount = numVertices;
@@ -60,4 +60,5 @@ void Mesh::draw(){
 
     //unbind
     glBindVertexArrayAPPLE(0);
+}
 }

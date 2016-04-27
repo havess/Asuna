@@ -1,13 +1,11 @@
 //
 //  Display.hpp
-//  OpenGLTut
+//  Asuna
 //
-//  Created by Sam Haves on 2015-12-17.
 //  Copyright © 2015 Sam Haves. All rights reserved.
 //
 
-#ifndef Display_hpp
-#define Display_hpp
+#pragma once
 
 #include <iostream>
 #include <SDL2/SDL.h>
@@ -23,6 +21,8 @@
     const glm::vec2 STANDARD_SIZE = glm::vec2(800,600);
 
 #endif
+
+namespace Asuna{
 
 class Display{
 public:
@@ -58,5 +58,4 @@ private:
     Camera m_camera;
 
 };
-
-#endif /* Display_hpp */
+}

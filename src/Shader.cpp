@@ -10,6 +10,8 @@
 #include <fstream>
 #include <iostream>
 
+namespace Asuna{
+
 static std::string loadShader(const std::string& filename);
 static void checkShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string& errMessage);
 static GLuint createShader(const std::string& text, GLenum shaderType);
@@ -110,6 +112,6 @@ void Shader::bind(){
 void Shader::update(const Transform& transform, const Camera& camera){
     glm::mat4 model = camera.getViewProjection() * transform.getModel();
 
-
     glUniformMatrix4fv(m_uniforms[TRANSFORM_U], 1, GL_FALSE, &model[0][0]);
+}
 }

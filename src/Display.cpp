@@ -11,6 +11,8 @@
 #include <GL/glew.h>
 #include "../includes/Asuna/Display.hpp"
 
+namespace Asuna{
+
 Display::Display(const glm::vec2& size, const std::string& title)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -45,11 +47,13 @@ Display::~Display()
     SDL_Quit();
 }
 
-bool Display::isClosed() const{
+bool Display::isClosed() const
+{
     return m_isClosed;
 }
 
-void Display::clear(float r, float g, float b, float a){
+void Display::clear(float r, float g, float b, float a)
+{
    glClearColor(r, g, b, a);
    glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -65,4 +69,5 @@ void Display::update()
             m_isClosed = true;
         }
     }
+}
 }

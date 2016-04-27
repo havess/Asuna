@@ -1,13 +1,11 @@
 //
 //  Camera.hpp
-//  OpenGLTut
+//  Asuna
 //
-//  Created by Sam Haves on 2015-12-24.
 //  Copyright © 2015 Sam Haves. All rights reserved.
 //
 
-#ifndef Camera_hpp
-#define Camera_hpp
+#pragma once
 
 #include <stdio.h>
 #include "glm/glm.hpp"
@@ -15,6 +13,9 @@
 
 typedef glm::vec3 vec3;
 typedef glm::mat4 mat4;
+
+namespace Asuna
+{
 
 class Camera{
 public:
@@ -36,5 +37,4 @@ private:
     vec3 m_up;
 
 };
-
-#endif /* Camera_hpp */
+}

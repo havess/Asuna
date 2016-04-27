@@ -1,17 +1,17 @@
 //
 //  Input.hpp
-//  Convex Hull
+//  Asuna
 //
-//  Created by Sam Haves on 2015-12-26.
 //  Copyright © 2015 Sam Haves. All rights reserved.
 //
 
-#ifndef Input_hpp
-#define Input_hpp
+#pragma once
 
-#include <stdio.h>
+#include <iostream>
 #include "Transform.hpp"
 #include "Camera.hpp"
+
+namespace Asuna{
 
 class Input{
 public:
@@ -44,4 +44,4 @@ public:
 
     }
 };
-#endif /* Input_hpp */
+}

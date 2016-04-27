@@ -10,6 +10,8 @@
 #include <stack>
 #include <unordered_map>
 
+namespace Asuna{
+
 double getDistanceFromPlane(const glm::vec3& point, const HE_Vert& vertex, const glm::vec3& normal);
 HE_Vert* getMax(HE_Vert* vertices, unsigned long const numVertices);
 std::pair<HE_Vert, HE_Vert> mostDistantPoints(HE_Vert vertices[], int numVertices);
@@ -283,4 +285,5 @@ HE_Vert mostDistantFromPlane(HE_Vert* vertices, unsigned long int numVerts, HE_F
         }
     }
     return rVert;
+}
 }
