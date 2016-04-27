@@ -60,9 +60,9 @@ TriangleFace IcoSphereGenerator::addFace(const unsigned int index1, const unsign
 
 
 void IcoSphereGenerator::normalize(Vertex& vertex, const float length){
-    glm::vec3 pos = *vertex.getPos();
+    vec3 pos = *vertex.getPos();
     double len = sqrt(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z);
-    *vertex.getPos() = glm::vec3(length*(pos.x/len), length*(pos.y/len), length*(pos.z/len));
+    *vertex.getPos() = vec3(length*(pos.x/len), length*(pos.y/len), length*(pos.z/len));
 }
 
 long int IcoSphereGenerator::getMidpoint(int iA, int iB){
@@ -79,11 +79,11 @@ long int IcoSphereGenerator::getMidpoint(int iA, int iB){
         return m_middlePointCache.at(key);
     }
 
-    glm::vec3 posA = *m_vertices[iA].getPos();
-    glm::vec3 posB = *m_vertices[iB].getPos();
-    glm::vec3 mid = glm::vec3((posA.x + posB.x)/2, (posA.y + posB.y)/2, (posA.z + posB.z)/2);
+    vec3 posA = *m_vertices[iA].getPos();
+    vec3 posB = *m_vertices[iB].getPos();
+    vec3 mid = vec3((posA.x + posB.x)/2, (posA.y + posB.y)/2, (posA.z + posB.z)/2);
 
-    Vertex output(mid, glm::vec2(0,0));
+    Vertex output(mid, vec2(0,0));
     normalize(output, m_radius);
     m_vertices.push_back(output);
 
@@ -97,20 +97,20 @@ std::vector<TriangleFace> IcoSphereGenerator::getIcosahedronFaces(){
     double t = (1.0 + sqrt(5.0)) / 2.0;
 
     Vertex vertices[] = {
-        Vertex(glm::vec3(-1,  t,  0), glm::vec2(0,0)),
-        Vertex(glm::vec3( 1,  t,  0), glm::vec2(0,0)),
-        Vertex(glm::vec3(-1, -t,  0), glm::vec2(0,0)),
-        Vertex(glm::vec3( 1, -t,  0), glm::vec2(0,0)),
+        Vertex(vec3(-1,  t,  0), vec2(0,0)),
+        Vertex(vec3( 1,  t,  0), vec2(0,0)),
+        Vertex(vec3(-1, -t,  0), vec2(0,0)),
+        Vertex(vec3( 1, -t,  0), vec2(0,0)),
 
-        Vertex(glm::vec3( 0, -1,  t), glm::vec2(0,0)),
-        Vertex(glm::vec3( 0,  1,  t), glm::vec2(0,0)),
-        Vertex(glm::vec3( 0, -1, -t), glm::vec2(0,0)),
-        Vertex(glm::vec3( 0,  1, -t), glm::vec2(0,0)),
+        Vertex(vec3( 0, -1,  t), vec2(0,0)),
+        Vertex(vec3( 0,  1,  t), vec2(0,0)),
+        Vertex(vec3( 0, -1, -t), vec2(0,0)),
+        Vertex(vec3( 0,  1, -t), vec2(0,0)),
 
-        Vertex(glm::vec3( t,  0, -1), glm::vec2(0,0)),
-        Vertex(glm::vec3( t,  0,  1), glm::vec2(0,0)),
-        Vertex(glm::vec3(-t,  0, -1), glm::vec2(0,0)),
-        Vertex(glm::vec3(-t,  0,  1), glm::vec2(0,0))
+        Vertex(vec3( t,  0, -1), vec2(0,0)),
+        Vertex(vec3( t,  0,  1), vec2(0,0)),
+        Vertex(vec3(-t,  0, -1), vec2(0,0)),
+        Vertex(vec3(-t,  0,  1), vec2(0,0))
     };
 
     for(unsigned int i = 0 ; i < 12; i++){
@@ -157,7 +157,7 @@ std::vector<TriangleFace> IcoSphereGenerator::getIcosahedronFaces(){
     return faces;
 }
 
-Sphere::Sphere(glm::vec3 position, const float radius): Geometry(position){
+Sphere::Sphere(vec3 position, const float radius): Geometry(position){
     m_radius = radius;
     m_icoGen = IcoSphereGenerator(position, radius, 2);
     m_icoGen.genVertices();
