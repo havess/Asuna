@@ -2,7 +2,6 @@
 //  Geometry.cpp
 //  Convex Hull
 //
-//  Created by Sam Haves on 2015-12-27.
 //  Copyright © 2015 Sam Haves. All rights reserved.
 //
 
@@ -11,6 +10,10 @@
 
 #include "../includes/Asuna/Geometry/Geometry.hpp"
 #include "../includes/Asuna/Geometry/Sphere.hpp"
+
+typedef glm::vec3 vec3;
+typedef glm::vec2 vec2;
+
 namespace Asuna{
 void IcoSphereGenerator::genVertices(){
 
