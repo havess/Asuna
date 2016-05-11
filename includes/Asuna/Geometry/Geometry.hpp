@@ -5,6 +5,12 @@
 //  Copyright © 2016 Sam Haves. All rights reserved.
 //
 
+/*
+This is the geometry *super* class. All primitives will be derived from this class.
+
+******Each child needs to implement genMesh(). This function should assigned a shared pointer to an instance of its Mesh*****
+*/
+
 #pragma once
 
 #include <iostream>
@@ -14,85 +20,35 @@
 #include "../Mesh.hpp"
 #include <GL/glew.h>
 
-typedef glm::vec3 vec3;
-typedef glm::vec2 vec2;
+template<typename T>
+using sp = std::shared_ptr<T>;
+using vec3 = glm::vec3;
+using vec2 = glm::vec2;
+using vector = std::std::vector<T>;
 
 namespace Asuna{
 
 class Geometry{
 public:
-
     virtual void genMesh() = 0;
+
+    //getters
     inline vec3* getPosition(){return &m_position;};
-    inline std::shared_ptr<Mesh> getMesh(){
-        return m_mesh;};
+    inline sp<Mesh> getMesh(){return m_mesh;};
 protected:
   Geometry(const vec3& position = vec3(0,0,0)): m_position(position) {}
+  //TODO: fix this
+  sp<Mesh> m_mesh;
+private:
+  //inherited but inaccessible variables go here
   vec3 m_position;
-  //TODO: fix this ugliness
-  std::shared_ptr<Mesh> m_mesh;
-private:
 };
 
-class Octahedron: public Geometry{
-public:
-    Octahedron(const vec3& position, const float height = 20.0f) : Geometry(position){
-        m_height = height;
-        m_len = m_height * cos(0.79);
-        m_vertices = getVertices();
-    }
-
-    std::vector<Vertex> getVertices(){
-        std::vector<Vertex> vertices = {
-            Vertex(vec3(-m_len,-m_len,0), vec2(0, 0)),
-            Vertex(vec3(-m_len,m_len,0), vec2(0, 0)),
-            Vertex(vec3(0,0,m_height), vec2(0, 0)),
-            Vertex(vec3(-m_len,-m_len,0), vec2(0, 0)),
-            Vertex(vec3(-m_len,m_len,0), vec2(0, 0)),
-            Vertex(vec3(0,0,-m_height), vec2(0, 0)),
-            Vertex(vec3(m_len,m_len,0), vec2(0, 0)),
-            Vertex(vec3(m_len,-m_len,0), vec2(0, 0)),
-            Vertex(vec3(0,0,m_height), vec2(0, 0)),
-            Vertex(vec3(m_len,m_len,0), vec2(0, 0)),
-            Vertex(vec3(m_len,-m_len,0), vec2(0, 0)),
-            Vertex(vec3(0,0,-m_height), vec2(0, 0)),
-            Vertex(vec3(-m_len,-m_len,0), vec2(0, 0)),
-            Vertex(vec3(m_len,-m_len,0), vec2(0, 0)),
-            Vertex(vec3(0,0,m_height), vec2(0, 0)),
-            Vertex(vec3(-m_len,-m_len,0), vec2(0, 0)),
-            Vertex(vec3(m_len,-m_len,0), vec2(0, 0)),
-            Vertex(vec3(0,0,-m_height), vec2(0, 0)),
-            Vertex(vec3(m_len,m_len,0), vec2(0, 0)),
-            Vertex(vec3(-m_len,m_len,0), vec2(0, 0)),
-            Vertex(vec3(0,0,m_height), vec2(0, 0)),
-            Vertex(vec3(m_len,m_len,0), vec2(0, 0)),
-            Vertex(vec3(-m_len,m_len,0), vec2(0, 0)),
-            Vertex(vec3(0,0,-m_height), vec2(0, 0)),
-        };
-        return vertices;
-    }
-
-    void genMesh(){
-        std::cout << m_vertices.size() << std::endl;
-        m_mesh = std::shared_ptr<Mesh>(new Mesh(&m_vertices[0], (int) m_vertices.size() , GL_TRIANGLES));
-    }
-
-    float* getHeight(){return &m_height;};
-
-    void setHeight(const float height){ m_height = height;};
-protected:
-
-private:
-    unsigned int m_numvertices;
-    float m_height, m_len;
-    std::vector<Vertex> m_vertices;
-
-};
-
+//For now I will keep all the needed geometry structs here. Might refactor if it starts becoming too large later.
 struct TriangleFace{
 public:
+    //these are the relative indices of the vertices in the vertex list. 
     unsigned int v1, v2, v3;
-
     TriangleFace(unsigned int v1, unsigned int v2, unsigned int v3): v1(v1),  v2(v2), v3(v3) {}
 };
 }
