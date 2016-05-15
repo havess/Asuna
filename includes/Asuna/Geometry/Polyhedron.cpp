@@ -30,8 +30,8 @@ private:
 
 class Octahedron: public Polyhedron{
 public:
-    Octahedron(const vec3& position, const float height = 20.0f) : Geometry(position), m_height(height), m_len(m_height * cos(0.79)),
-    m_vertices(getVertices()){}
+    Octahedron(const vec3& position, const float height = 20.0f) : Geometry(position), m_height(height),
+        m_len(m_height * cos(0.79)),m_vertices(getVertices()){}
 
     std::vector<Vertex> getVertices(){
         std::vector<Vertex> vertices = {

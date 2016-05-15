@@ -18,45 +18,49 @@ struct HalfEdge;
 struct HE_Vert;
 struct HE_Face;
 
+template<typename T>
+using sp = sp<T>;
+using vec3 = vec3;
+using vec2 = glm::vec2;
+template<typename T>
+using vector = std::vector<T>;
+
 class Vertex{
 public:
-    Vertex(const glm::vec3& pos, const glm::vec2& texCoord){
-        m_pos = pos;
-        m_textCoord = texCoord;
-    }
+    Vertex(const vec3& pos, const vec2& texCoord): m_pos(pos), m_textCoord(texCoord){}
 
     void normalize();
 
-    inline glm::vec3* getPos(){
+    inline vec3* getPos(){
         return &m_pos;
     }
 
-    inline void setPos(glm::vec3 pos){m_pos =pos;};
+    inline void setPos(vec3 pos){m_pos =pos;};
 
-    inline glm::vec2* getTextCoord(){
+    inline vec2* getTextCoord(){
         return &m_textCoord;
     }
 
 protected:
 private:
-    glm::vec3 m_pos;
-    glm::vec2 m_textCoord;
+    vec3 m_pos;
+    vec2 m_textCoord;
 };
 
 struct HalfEdge{
-    std::shared_ptr<HalfEdge> next , previous, pair;
-    std::shared_ptr<HE_Vert> origin;
-    std::shared_ptr<HE_Face> face;
+    sp<HalfEdge> next , previous, pair;
+    sp<HE_Vert> origin;
+    sp<HE_Face> face;
 };
 
 struct HE_Vert{
-    glm::vec3 position;
-    std::shared_ptr<HalfEdge> edge;
+    vec3 position;
+    sp<HalfEdge> edge;
 };
 
 struct HE_Face{
-    glm::vec3 normal;
-    std::shared_ptr<HalfEdge> edge;
+    vec3 normal;
+    sp<HalfEdge> edge;
     long int id;
 };
 

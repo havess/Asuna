@@ -24,7 +24,8 @@ template<typename T>
 using sp = std::shared_ptr<T>;
 using vec3 = glm::vec3;
 using vec2 = glm::vec2;
-using vector = std::std::vector<T>;
+template<typename T>
+using vector = std::vector<T>;
 
 namespace Asuna{
 
@@ -47,7 +48,7 @@ private:
 //For now I will keep all the needed geometry structs here. Might refactor if it starts becoming too large later.
 struct TriangleFace{
 public:
-    //these are the relative indices of the vertices in the vertex list. 
+    //these are the relative indices of the vertices in the vertex list.
     unsigned int v1, v2, v3;
     TriangleFace(unsigned int v1, unsigned int v2, unsigned int v3): v1(v1),  v2(v2), v3(v3) {}
 };
