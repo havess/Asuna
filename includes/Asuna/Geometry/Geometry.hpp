@@ -31,13 +31,16 @@ namespace Asuna{
 
 class Geometry{
 public:
-    virtual void genMesh() = 0;
-
     //getters
     inline vec3* getPosition(){return &m_position;};
     inline sp<Mesh> getMesh(){return m_mesh;};
+    inline void render(){
+      if(m_mesh == nullptr){genMesh();}
+      m_mesh->draw();
+    }
 protected:
   Geometry(const vec3& position = vec3(0,0,0)): m_position(position) {}
+  virtual void genMesh() = 0;
   //TODO: fix this
   sp<Mesh> m_mesh;
 private:
