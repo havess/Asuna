@@ -11,9 +11,11 @@ OpenGL 3D engine where I experiment with new render techniques, computational ge
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
 
-## History
+## TODO-LIST
 
-TODO: Write history
+1. Integrate ImGui HUD/Console
+2. Layout Demo structure
+3. Add light models
 
 ## Credits
 
