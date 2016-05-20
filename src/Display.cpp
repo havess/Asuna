@@ -29,7 +29,8 @@ Display::Display(const glm::vec2& size, const std::string& title)
 
     m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, size.x, size.y, SDL_WINDOW_OPENGL);
     m_glContext = SDL_GL_CreateContext(m_window);
-
+    SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    //SDL_ShowCursor(true);
     GLenum status = glewInit();
 
     if(status != GLEW_OK){

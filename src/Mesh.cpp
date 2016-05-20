@@ -57,7 +57,8 @@ void Mesh::draw(){
     glBindVertexArrayAPPLE(m_vertexArrayObject);
 
     glDrawArrays(m_drawType, 0, m_drawCount);
-
+    GLenum err = glGetError();
+    if(err != GL_NO_ERROR){std::cout << "shit" << std::endl;}
     //unbind
     glBindVertexArrayAPPLE(0);
 }

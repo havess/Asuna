@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include "glm/glm.hpp"
 #include <GL/glew.h>
 
@@ -19,8 +20,8 @@ struct HE_Vert;
 struct HE_Face;
 
 template<typename T>
-using sp = sp<T>;
-using vec3 = vec3;
+using sp = std::shared_ptr<T>;
+using vec3 = glm::vec3;
 using vec2 = glm::vec2;
 template<typename T>
 using vector = std::vector<T>;

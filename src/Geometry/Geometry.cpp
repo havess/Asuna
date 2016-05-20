@@ -158,8 +158,9 @@ std::vector<TriangleFace> IcoSphereGenerator::getIcosahedronFaces(){
 }
 
 Sphere::Sphere(vec3 position, const float radius): Geometry(position){
+    std::cout << "generating sphere" << std::endl;
     m_radius = radius;
-    m_icoGen = IcoSphereGenerator(position, radius, 2);
+    m_icoGen = IcoSphereGenerator(position, radius, 4);
     m_icoGen.genVertices();
 }
 

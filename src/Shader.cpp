@@ -85,6 +85,7 @@ static void checkShaderError(GLuint shader, GLuint flag, bool isProgram, const s
 
         std::cerr << errMessage << ": " << error << "'" << std::endl;
     }
+    std::cout << "no shader error" << std::endl;
 }
 
 static GLuint createShader(const std::string& text, GLenum shaderType){
@@ -102,6 +103,7 @@ static GLuint createShader(const std::string& text, GLenum shaderType){
     glCompileShader(shader);
 
     checkShaderError(shader, GL_COMPILE_STATUS, false, "Error: compilation failed!");
+    std::cout << "shader was created" << std::endl;
     return shader;
 }
 
