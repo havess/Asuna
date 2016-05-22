@@ -16,7 +16,7 @@ This is the geometry *super* class. All primitives will be derived from this cla
 #include <iostream>
 #include <vector>
 #include <map>
-//#include "../../../external/glm/glm.hpp"
+#include "glm/glm.hpp"
 #include "../Mesh.hpp"
 #include <GL/glew.h>
 

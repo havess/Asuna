@@ -15,7 +15,7 @@ This is the general hud class. This will be what is instantied for the HUD overl
 #include <vector>
 #include <map>
 #include <GL/glew.h>
-
+#include "glm/glm.hpp"
 #include "../../../external/imgui/imgui.h"
 
 template<typename T>
@@ -24,20 +24,20 @@ using vec3 = glm::vec3;
 using vec2 = glm::vec2;
 template<typename T>
 using vector = std::vector<T>;
+namespace Asuna{
 
 struct HUD_Data{
   vec2 dimensions;
   ImDrawData* draw_data = ImGui::GetDrawData();
-}
+};
 
-namespace Asuna{
 class HUD{
 public:
   HUD();
   virtual ~HUD();
 
-  initHUD(const float width, const float height);
-  update();
+  bool initHUD(const float width, const float height);
+  void update();
 
   //************ inline funcs ******************//
   inline HUD_Data getData() const{ return  m_hudData;}
@@ -46,4 +46,4 @@ private:
   void RenderDrawLists(ImDrawData* draw_data);
   bool createDevices();
   HUD_Data m_hudData;
-}
+};

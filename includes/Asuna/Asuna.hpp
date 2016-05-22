@@ -10,6 +10,7 @@
 
 #include "Camera.hpp"
 #include "Common.hpp"
+#include "Demo/Demo.hpp"
 #include "Display.hpp"
 #include "Geometry/Geometry.hpp"
 #include "Geometry/Sphere.hpp"
