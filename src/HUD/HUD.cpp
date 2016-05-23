@@ -18,8 +18,8 @@ HUD::HUD(){}
 
 HUD::~HUD(){}
 
-HUD::init(){}
+bool HUD::init(const float width, const float height){}
 
-HUD::update(){}
+void HUD::update(){}
 
 }

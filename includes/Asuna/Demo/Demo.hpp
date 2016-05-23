@@ -19,23 +19,25 @@ using vector = std::vector<T>;
 template<typename T, typename K>
 using map = std::map<T,K>;
 
-
-namespace Asuna{
-
 enum DemoEnum{
   SPHERE_DEMO,
   DEMO_COUNT
 };
 
+
+namespace Asuna{
+
+
 struct DemoTemplate{
 public:
-  DemoTemplate(DemoEnum type): type(type){}
+
   inline DemoEnum getType(){return type;}
-protected:
-  virtual ~DemoTemplate(){}
   virtual bool init() = 0;
   virtual bool shutDown() = 0;
   virtual void execute() = 0;
+protected:
+  DemoTemplate(DemoEnum type): type(type){}
+  virtual ~DemoTemplate(){}
 private:
   DemoEnum type;
 };
@@ -48,7 +50,7 @@ public:
   virtual ~SphereDemo(){shutDown();}
   virtual bool init(){
     //initialize DemoHandler
-    m_sphere0->genMesh();
+    m_sphere->genMesh();
     return true;
   }
   virtual bool shutDown(){
@@ -65,8 +67,8 @@ private:
 
 class DemoHandler{
 public:
-  DemoHandler();
-  virtual ~DemoHandler();
+  DemoHandler(){}
+  virtual ~DemoHandler(){}
 
   bool init(DemoEnum type){
     if(type < SPHERE_DEMO || type > SPHERE_DEMO) {return false;}
@@ -81,12 +83,12 @@ public:
     return true;
   }
   void execute(){
-    for(std::pair<DemoEnum,DemoHandler> p: demos){
-      p.second.execute();
+    for(std::pair<DemoEnum,DemoTemplate*> p: demos){
+      p.second->execute();
     }
   }
 private:
-  DemoHandler getDemo(DemoEnum type){
+  DemoTemplate* getDemo(DemoEnum type){
     switch(type){
       //specify parameters if you want it to be non default
       case SPHERE_DEMO: return new SphereDemo();
@@ -94,6 +96,6 @@ private:
     }
     return nullptr;
   }
-  map<DemoEnum, DemoHandler> demos;
+  map<DemoEnum, DemoTemplate*> demos;
 };
 }

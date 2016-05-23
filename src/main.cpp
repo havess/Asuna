@@ -25,14 +25,13 @@ int main(int argc, const char * argv[]) {
     Asuna::Display display(vec2(1000,700), "3D QuickHull");
     Asuna::Shader shader("basicShader");
     Asuna::Input input;
+    Asuna::DemoHandler demoHandler;
+
     Asuna::Transform transform;
     Asuna::Camera camera(vec3(-200,-300,200), 70.0f, display.getAspectRatio(), 0.0f, 2000.0f,vec3(200,300,-200));
-    Asuna::Sphere sphere(vec3(0,0,0), 100.0f);
 
     /**********setup************/
-    sphere.genMesh();
-    vector<sp<Asuna::Mesh>> meshes;
-    meshes.push_back(sphere.getMesh());
+    demoHandler.init(SPHERE_DEMO);
 
     /***********'draw loop'**********/
     while(!display.isClosed()){
@@ -41,10 +40,7 @@ int main(int argc, const char * argv[]) {
       shader.bind();
       input.applyKeyPresses(transform, camera);
       shader.update(transform, camera);
-      sphere.getMesh()->draw();
-      for(int i = 0; i < meshes.size(); i++){
-          meshes[i]->draw();
-      }
+      demoHandler.execute();
       display.update();
     }
     return 0;

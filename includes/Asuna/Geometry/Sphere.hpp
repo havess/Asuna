@@ -10,6 +10,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include "Geometry.hpp"
 #include "../Mesh.hpp"
 #include <GL/glew.h>
 

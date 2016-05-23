@@ -1,4 +1,4 @@
-OBJS = ./src/*.cpp ./src/Geometry/*.cpp ./src/HUD/*.cpp
+OBJS = ./src/*.cpp ./src/Geometry/*.cpp ./src/HUD/*.cpp 
 
 CC = g++ -std=c++11
 

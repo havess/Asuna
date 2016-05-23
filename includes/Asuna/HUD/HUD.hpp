@@ -36,7 +36,7 @@ public:
   HUD();
   virtual ~HUD();
 
-  bool initHUD(const float width, const float height);
+  bool init(const float width, const float height);
   void update();
 
   //************ inline funcs ******************//
@@ -47,3 +47,4 @@ private:
   bool createDevices();
   HUD_Data m_hudData;
 };
+}

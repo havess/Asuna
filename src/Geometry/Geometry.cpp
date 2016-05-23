@@ -8,8 +8,7 @@
 #include <stdio.h>
 #include <iostream>
 
-#include "../includes/Asuna/Geometry/Geometry.hpp"
-#include "../includes/Asuna/Geometry/Sphere.hpp"
+#include "../../includes/Asuna/Asuna.hpp"
 
 typedef glm::vec3 vec3;
 typedef glm::vec2 vec2;
