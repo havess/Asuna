@@ -14,7 +14,7 @@ OpenGL 3D engine where I experiment with new render techniques, computational ge
 ## TODO-LIST
 
 1. Integrate ImGui HUD/Console
-2. Layout Demo structure
+2. Add materials stuff
 3. Add light models
 
 ## Credits
