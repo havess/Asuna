@@ -12,6 +12,7 @@
 #include "glm/glm.hpp"
 #include <string>
 
+#include "HUD/HUD.hpp"
 #include "Transform.hpp"
 #include "Camera.hpp"
 
@@ -27,7 +28,7 @@ namespace Asuna{
 class Display{
 public:
 
-    Display(const glm::vec2& size, const std::string& title);
+    Display(const glm::vec2& size, const std::string& title, const bool hud);
     virtual ~Display();
 
     void update();
@@ -56,6 +57,8 @@ private:
 
     Transform m_worldMat;
     Camera m_camera;
+
+    HUD* m_hud;
 
 };
 }

@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <GL/glew.h>
 #include "Camera.hpp"
 #include "Common.hpp"
 #include "Demo/Demo.hpp"

@@ -8,7 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
-#include <GL/glew.h>
+
 
 #include "../includes/Asuna/Asuna.hpp"
 
@@ -22,7 +22,7 @@ using vector = std::vector<T>;
 
 int main(int argc, const char * argv[]) {
     /*********inits**************/
-    Asuna::Display display(vec2(1000,700), "3D QuickHull");
+    Asuna::Display display(vec2(1000,700), "3D QuickHull", true);
     Asuna::Shader shader("basicShader");
     Asuna::Input input;
     Asuna::DemoHandler demoHandler;

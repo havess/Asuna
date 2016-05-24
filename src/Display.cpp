@@ -13,7 +13,7 @@
 
 namespace Asuna{
 
-Display::Display(const glm::vec2& size, const std::string& title)
+Display::Display(const glm::vec2& size, const std::string& title, const bool hud)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -30,8 +30,12 @@ Display::Display(const glm::vec2& size, const std::string& title)
     m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         size.x, size.y, SDL_WINDOW_OPENGL);
     m_glContext = SDL_GL_CreateContext(m_window);
+    if(hud){
+      m_hud = new HUD(glm::vec2(size.x, size.y), "Asuna");
+    }
+    m_hud->init();
     //this is doing weird stuff on mac, figure it out later
-    //  -> SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     //SDL_ShowCursor(true);
     GLenum status = glewInit();
 
@@ -45,6 +49,7 @@ Display::Display(const glm::vec2& size, const std::string& title)
 
 Display::~Display()
 {
+    delete m_hud;
     SDL_GL_DeleteContext(m_glContext);
     SDL_DestroyWindow(m_window);
     SDL_Quit();
@@ -52,6 +57,7 @@ Display::~Display()
 
 bool Display::isClosed() const
 {
+    m_hud->beginHUD();
     return m_isClosed;
 }
 
@@ -63,12 +69,14 @@ void Display::clear(float r, float g, float b, float a)
 
 void Display::update()
 {
+    m_hud->endHUD();
     SDL_GL_SwapWindow(m_window);
 
     SDL_Event e;
 
     while(SDL_PollEvent(&e)){
         if(e.type == SDL_QUIT){
+          m_hud->processEvent(&e);
             m_isClosed = true;
         }
     }
