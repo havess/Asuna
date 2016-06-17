@@ -1,8 +1,8 @@
-OBJS = ./src/*.cpp ./src/Geometry/*.cpp ./src/HUD/*.cpp 
+OBJS = ./src/*.cpp ./src/Geometry/*.cpp ./src/HUD/*.cpp
 
 CC = g++ -std=c++11
 
-COMPILER_FLAGS = -w
+COMPILER_FLAGS = -w -g
 
 LINKER_FLAGS = -I/usr/local/include -L/usr/local/lib -lSDL2main -lSDL2 -lGLEW
 FRAME_WORKS = -framework GLUT -framework OpenGL -framework Cocoa

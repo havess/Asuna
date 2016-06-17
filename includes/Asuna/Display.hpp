@@ -19,7 +19,7 @@
 #if !defined(DISPLAY_CONSTANTS)
 #define DISPLAY_CONSTANTS
 
-    const glm::vec2 STANDARD_SIZE = glm::vec2(800,600);
+    const glm::vec2 STANDARD_SIZE = glm::vec2(1080,720);
 
 #endif
 

@@ -34,23 +34,24 @@ using vector = std::vector<T>;
 
 #endif
 
-namespace Asuna{
-
-
 struct HUD_Data{
-  HUD_Data(const vec2 dimensions, const std::string name): name(name), dimensions(dimensions){}
+  HUD_Data(const vec2 dimensions,SDL_Window* window, const std::string name): name(name),window(window), dimensions(dimensions){}
   std::string name;
+  SDL_Window* window;
   bool initialized = false;
   vec2 dimensions;
   double time = 0.0f;
   bool mousePressed[3] = { false, false, false };
   float mouseWheel = 0.0f;
-  GLuint fontTexture = 0;
+  GLuint fontTexture = 0, vaoHandle, vertHandle, elementsHandle,shaderHandle, vertHandle, fragHandle,
+    attribLocationPos, attribLocationUV, attribLocationCol, attribLocationTex, attribLocationProjMtx;
 };
+
+namespace Asuna{
 
 class HUD{
 public:
-  HUD(const vec2 dimensions, const std::string title = DEFAULT_TITLE);
+  HUD(SDL_Window* window, const vec2 dimensions, const std::string title = DEFAULT_TITLE);
   virtual ~HUD();
 
   bool init();
@@ -64,6 +65,6 @@ public:
 private:
   bool createDevices();
   bool invalidateDevices();
-  static HUD_Data* m_hudData;
+  HUD_Data* m_hudData;
 };
 }

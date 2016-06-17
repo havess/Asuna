@@ -16,8 +16,8 @@ MORE DOCUMENTATION TO COME, CALM YOUR SHIT!!
 
 namespace Asuna{
 
-HUD::HUD(const vec2 dimensions, const std::string title){
-  m_hudData = new HUD_Data(dimensions, title);
+HUD::HUD(const vec2 dimensions,SDL_Window* window, const std::string title){
+  m_hudData = new HUD_Data(dimensions,window, title);
 }
 
 HUD::~HUD(){
@@ -30,7 +30,7 @@ void RenderDrawLists(ImDrawData* draw_data){
     ImGuiIO& io = ImGui::GetIO();
     int fb_width = (int)(io.DisplaySize.x * io.DisplayFramebufferScale.x);
     int fb_height = (int)(io.DisplaySize.y * io.DisplayFramebufferScale.y);
-    if(fb_width == 0 || fb_height == 0){return;}
+    if(fb_width == 0 || fb_height == 0){std::cout<< "frame buffer was zero" << std::endl; return;}
     draw_data->ScaleClipRects(io.DisplayFramebufferScale);
 
     // We are using the OpenGL fixed pipeline to make the example code simpler to read!
@@ -48,16 +48,6 @@ void RenderDrawLists(ImDrawData* draw_data){
     glEnableClientState(GL_COLOR_ARRAY);
     glEnable(GL_TEXTURE_2D);
     //glUseProgram(0); // You may want this if using this code in an OpenGL 3+ context
-
-    // Setup viewport, orthographic projection matrix
-    glViewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(0.0f, io.DisplaySize.x, io.DisplaySize.y, 0.0f, -1.0f, +1.0f);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
 
     // Render command lists
     #define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
@@ -93,12 +83,9 @@ void RenderDrawLists(ImDrawData* draw_data){
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
     glBindTexture(GL_TEXTURE_2D, (GLuint)last_texture);
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glPopAttrib();
-    glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
+
+
+    if(glGetError() != GL_NO_ERROR){std::cout << "houston we have a problem" << std::endl;}
 
 }
 
@@ -136,16 +123,19 @@ bool HUD::init(){
 
 bool show_test_window = true;
 bool show_another_window = false;
+
 void HUD::beginHUD(){
   if(!m_hudData->fontTexture){
+    std::cout << "Creating devices" << std::endl;
     createDevices();
   }
   ImGuiIO& io = ImGui::GetIO();
 
-  int w, h;
-  int display_w, display_h;
-  SDL_GetWindowSize(window, &w, &h);
-  SDL_GL_GetDrawableSize(window, &display_w, &display_h);
+  int w, h, display_w, display_h;
+
+  SDL_GetWindowSize(m_hudData->window, &w, &h);
+  SDL_GL_GetDrawableSize(m_hudData->window, &display_w, &display_h);
+
   io.DisplaySize = ImVec2((float)w, (float)h);
   io.DisplayFramebufferScale = ImVec2(w > 0 ? ((float)display_w / w) : 0, h > 0 ? ((float)display_h / h) : 0);
 
@@ -156,7 +146,7 @@ void HUD::beginHUD(){
 
   int mx, my;
   Uint32 MouseMask = SDL_GetMouseState(&mx, &my);
-  if (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_FOCUS)
+  if (SDL_GetWindowFlags(m_hudData->window) & SDL_WINDOW_MOUSE_FOCUS)
       io.MousePos = ImVec2((float)mx, (float)my);
   else
       io.MousePos = ImVec2(-1,-1);
@@ -168,37 +158,9 @@ void HUD::beginHUD(){
   io.MouseWheel = m_hudData->mouseWheel;
   m_hudData->mouseWheel = 0.0f;
 
-  SDL_ShowCursor(io.mouseDrawCursor ? 0 : 1);
+  SDL_ShowCursor(io.MouseDrawCursor ? 0 : 1);
 
   ImGui::NewFrame();
-
-  // 1. Show a simple window
-  // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
-  {
-      static float f = 0.0f;
-      ImGui::Text("Hello, world!");
-      ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-      ImGui::ColorEdit3("clear color", (float*)&clear_color);
-      if (ImGui::Button("Test Window")) show_test_window ^= 1;
-      if (ImGui::Button("Another Window")) show_another_window ^= 1;
-      ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-  }
-
-  // 2. Show another simple window, this time using an explicit Begin/End pair
-  if (show_another_window)
-  {
-      ImGui::SetNextWindowSize(ImVec2(200,100), ImGuiSetCond_FirstUseEver);
-      ImGui::Begin("Another Window", &show_another_window);
-      ImGui::Text("Hello");
-      ImGui::End();
-  }
-
-  // 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
-  if (show_test_window)
-  {
-      ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
-      ImGui::ShowTestWindow(&show_test_window);
-  }
 }
 
 void HUD::endHUD(){
@@ -212,16 +174,16 @@ bool HUD::processEvent(SDL_Event* event){
     case SDL_MOUSEWHEEL:
         {
             if (event->wheel.y > 0)
-                g_MouseWheel = 1;
+                m_hudData->mouseWheel = 1;
             if (event->wheel.y < 0)
-                g_MouseWheel = -1;
+                m_hudData->mouseWheel = -1;
             return true;
         }
     case SDL_MOUSEBUTTONDOWN:
         {
-            if (event->button.button == SDL_BUTTON_LEFT) g_MousePressed[0] = true;
-            if (event->button.button == SDL_BUTTON_RIGHT) g_MousePressed[1] = true;
-            if (event->button.button == SDL_BUTTON_MIDDLE) g_MousePressed[2] = true;
+            if (event->button.button == SDL_BUTTON_LEFT) m_hudData->mousePressed[0] = true;
+            if (event->button.button == SDL_BUTTON_RIGHT) m_hudData->mousePressed[1] = true;
+            if (event->button.button == SDL_BUTTON_MIDDLE) m_hudData->mousePressed[2] = true;
             return true;
         }
     case SDL_TEXTINPUT:
@@ -245,13 +207,10 @@ bool HUD::processEvent(SDL_Event* event){
     return false;
 }
 
-bool HUD::createDevices(){
-
-  // Build texture atlas
-  ImGuiIO& io = ImGui::GetIO();
+bool HUD::createFontsTexture(){
   unsigned char* pixels;
   int width, height;
-  io.Fonts->GetTexDataAsAlpha8(&pixels, &width, &height);
+  io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
   // Upload texture to graphics system
   GLint last_texture;
@@ -271,7 +230,87 @@ bool HUD::createDevices(){
   return true;
 }
 
-void HUD::invalidateDevices()
+
+bool HUD::createDevices(){
+
+  // Build texture atlas
+  ImGuiIO& io = ImGui::GetIO();
+  // Backup GL state
+  GLint last_texture, last_array_buffer, last_vertex_array;
+  glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
+  glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
+  glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
+
+  const GLchar *vertex_shader =
+      "#version 330\n"
+      "uniform mat4 ProjMtx;\n"
+      "in vec2 Position;\n"
+      "in vec2 UV;\n"
+      "in vec4 Color;\n"
+      "out vec2 Frag_UV;\n"
+      "out vec4 Frag_Color;\n"
+      "void main()\n"
+      "{\n"
+      "	Frag_UV = UV;\n"
+      "	Frag_Color = Color;\n"
+      "	gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
+      "}\n";
+
+  const GLchar* fragment_shader =
+      "#version 330\n"
+      "uniform sampler2D Texture;\n"
+      "in vec2 Frag_UV;\n"
+      "in vec4 Frag_Color;\n"
+      "out vec4 Out_Color;\n"
+      "void main()\n"
+      "{\n"
+      "	Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
+      "}\n";
+
+  m_hudData->shaderHandle = glCreateProgram();
+  m_hudData->vertHandle = glCreateShader(GL_VERTEX_SHADER);
+  m_hudData->fragHandle = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(m_hudData->vertHandle, 1, &vertex_shader, 0);
+  glShaderSource(m_hudData->fragHandle, 1, &fragment_shader, 0);
+  glCompileShader(m_hudData->vertHandle);
+  glCompileShader(m_hudData->fragHandle);
+  glAttachShader(m_hudData->shaderHandle, m_hudData->vertHandle);
+  glAttachShader(m_hudData->shaderHandle, m_hudData->fragHandle);
+  glLinkProgram(m_hudData->shaderHandle);
+
+  m_hudData->attribLocationTex = glGetUniformLocation(m_hudData->shaderHandle, "Texture");
+  m_hudData->attribLocationProjMtx = glGetUniformLocation(m_hudData->shaderHandle, "ProjMtx");
+  m_hudData->attribLocationPosition = glGetAttribLocation(m_hudData->shaderHandle, "Position");
+  m_hudData->attribLocationUV = glGetAttribLocation(m_hudData->shaderHandle, "UV");
+  m_hudData->attribLocationColor = glGetAttribLocation(m_hudData->shaderHandle, "Color");
+
+  glGenBuffers(1, &m_hudData->vertHandle);
+  glGenBuffers(1, &m_hudData->elementsHandle);
+
+  glGenVertexArrays(1, &m_hudData->vaoHandle);
+  glBindVertexArray(m_hudData->vaoHandle);
+  glBindBuffer(GL_ARRAY_BUFFER, m_hudData->vertHandle);
+  glEnableVertexAttribArray(m_hudData->attribLocationPosition);
+  glEnableVertexAttribArray(m_hudData->attribLocationUV);
+  glEnableVertexAttribArray(m_hudData->attribLocationColor);
+
+  #define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
+  glVertexAttribPointer(m_hudData->attribLocationPosition, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos));
+  glVertexAttribPointer(m_hudData->attribLocationUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
+  glVertexAttribPointer(m_hudData->attribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
+  #undef OFFSETOF
+
+  ImGui_ImplSdlGL3_CreateFontsTexture();
+
+  // Restore modified GL state
+  glBindTexture(GL_TEXTURE_2D, last_texture);
+  glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
+  glBindVertexArray(last_vertex_array);
+
+  return true;
+}
+
+bool HUD::invalidateDevices()
 {
     if (m_hudData->fontTexture)
     {
@@ -279,6 +318,7 @@ void HUD::invalidateDevices()
         ImGui::GetIO().Fonts->TexID = 0;
         m_hudData->fontTexture = 0;
     }
+    return true;
 }
 
 bool HUD::shutdown()

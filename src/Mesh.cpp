@@ -10,10 +10,11 @@
 #include <vector>
 #include <iostream>
 
+namespace Asuna
+{
 
-
-namespace Asuna{
-Mesh::Mesh(Vertex* vertices, unsigned int numVertices, GLenum drawType){
+Mesh::Mesh(Vertex* vertices, unsigned int numVertices, GLenum drawType)
+{
 
     m_drawCount = numVertices;
     m_drawType = drawType;
@@ -26,7 +27,8 @@ Mesh::Mesh(Vertex* vertices, unsigned int numVertices, GLenum drawType){
     positions.reserve(numVertices);
     textCoords.reserve(numVertices);
 
-    for(int i = 0; i < numVertices; i++){
+    for(int i = 0; i < numVertices; i++)
+    {
         positions.push_back(*vertices[i].getPos());
         textCoords.push_back(*vertices[i].getTextCoord());
     }
@@ -49,11 +51,14 @@ Mesh::Mesh(Vertex* vertices, unsigned int numVertices, GLenum drawType){
     glBindVertexArrayAPPLE(0);
 }
 
-Mesh::~Mesh(){
+Mesh::~Mesh()
+{
     glDeleteVertexArraysAPPLE(1,&m_vertexArrayObject);
 }
 
-void Mesh::draw(){
+void Mesh::draw()
+{
+    //bind VAO
     glBindVertexArrayAPPLE(m_vertexArrayObject);
 
     glDrawArrays(m_drawType, 0, m_drawCount);
