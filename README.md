@@ -8,14 +8,23 @@ OpenGL 3D engine where I experiment with new render techniques, computational ge
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
 3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin my-new-feature`
+4. Push to the branch (please squash commits to 1 or 2): `git push origin my-new-feature`
 5. Submit a pull request :D
 
-## TODO-LIST
+## TODO-LIST (in no particular order)
 
-1. Integrate ImGui HUD/Console
-2. Add materials stuff
-3. Add light models
+1. Integrate ImGui HUD/Console (WIP)
+2. Materials stuff
+3. Light models
+4. Batch drawing
+5. Terrain Generation (Perlin)
+6. Geometry and Mesh refactor (WIP)
+7. Geometry extension (BSpline, cylinder, cube, etc.)
+8. Convex Hull redo
+9. Geometry Shaders
+10. Procedural Volumetric Terrain (marching cube algorithm in geometry shader?)
+11. Procedural Tree Generation (voxels, probably not L-system)
+12. blah I could make this list go on forever :)
 
 ## Credits
 
