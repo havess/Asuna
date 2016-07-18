@@ -3,8 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <map>
-//#include "../../../external/glm/glm.hpp"
 #include "../Mesh.hpp"
+#include "../Common.hpp"
 #include <GL/glew.h>
 
 template<typename T>
@@ -22,10 +22,7 @@ public:
 protected:
   Geometry(const vec3& position = vec3(0,0,0)): m_position(position) {}
   vec3 m_position;
-  //TODO: fix this ugliness
-  std::shared_ptr<Mesh> m_mesh;
-private:
-
+  Mesh m_mesh;
 };
 
 class Octahedron: public Polyhedron{
@@ -78,12 +75,5 @@ private:
     float m_height, m_len;
     std::vector<Vertex> m_vertices;
 
-};
-
-struct TriangleFace{
-public:
-    unsigned int v1, v2, v3;
-
-    TriangleFace(unsigned int v1, unsigned int v2, unsigned int v3): v1(v1),  v2(v2), v3(v3) {}
 };
 }

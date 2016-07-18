@@ -34,24 +34,12 @@ using vector = std::vector<T>;
 
 #endif
 
-struct HUD_Data{
-  HUD_Data(const vec2 dimensions,SDL_Window* window, const std::string name): name(name),window(window), dimensions(dimensions){}
-  std::string name;
-  SDL_Window* window;
-  bool initialized = false;
-  vec2 dimensions;
-  double time = 0.0f;
-  bool mousePressed[3] = { false, false, false };
-  float mouseWheel = 0.0f;
-  GLuint fontTexture = 0, vaoHandle, vertHandle, elementsHandle,shaderHandle, vertHandle, fragHandle,
-    attribLocationPos, attribLocationUV, attribLocationCol, attribLocationTex, attribLocationProjMtx;
-};
+namespace Asuna {
 
-namespace Asuna{
-
-class HUD{
+class HUD
+{
 public:
-  HUD(SDL_Window* window, const vec2 dimensions, const std::string title = DEFAULT_TITLE);
+  HUD(SDL_Window* window, const std::string title = DEFAULT_TITLE);
   virtual ~HUD();
 
   bool init();
@@ -60,11 +48,9 @@ public:
   bool shutdown();
   bool processEvent(SDL_Event* event);
 
-  //************ inline funcs ******************//
-  inline HUD_Data* getData() const{return  m_hudData;}
 private:
+  bool createFontsTexture();
   bool createDevices();
   bool invalidateDevices();
-  HUD_Data* m_hudData;
 };
 }

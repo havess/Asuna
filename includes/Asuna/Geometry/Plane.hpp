@@ -21,21 +21,10 @@ namespace Asuna{
 
 class Plane: public Geometry{
 public:
-    Plane(const vec3& position,const vec3& normal = vec3(0,1,0), const float width = 400, const float height = 400): Geometry(position){
-        m_normal = normal;
-        m_height = height;
-        m_width = width;
-    }
+    Plane(const vec3& position,const vec3& normal = vec3(0,1,0), const float width = 400, const float height = 400):
+        Geometry(position), m_normal(normal), m_height(height), m_width(width){}
 
-    virtual void genMesh(){
-        Vertex vertices[] = {
-            Vertex(vec3(-1,-1,0), vec2(0, 0)),
-            Vertex(vec3(-1,1,0), vec2( 0, 1)),
-            Vertex(vec3(1,1,0), vec2(1, 1)),
-            Vertex(vec3(1,-1,0), vec2(1, 0))
-        };
-        m_mesh = std::shared_ptr<Mesh>(new Mesh(vertices, sizeof(vertices)/sizeof(Vertex), GL_QUADS));
-    }
+    virtual void genMesh();
 
     virtual inline vec3* getNormal(){return &m_normal;};
     virtual inline float* getHeight(){return &m_height;};

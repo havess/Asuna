@@ -7,84 +7,91 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include "glm/glm.hpp"
-#include <GL/glew.h>
+#include "Common.hpp"
 
-namespace Asuna{
+//render mask macros here
+#define MESH_INDEXED 1
+
+//render mask offsets go here
+#define INDEXED_OFFSET 0
+
+#ifdef(__APPLE__)
+#define glGenVertexArrays glGenVertexArraysAPPLE
+#define glBindVertexArray glBindVertexArrayAPPLE
+#endif
+
+namespace Asuna
+{
 
 struct HalfEdge;
 struct HE_Vert;
 struct HE_Face;
 
-template<typename T>
-using sp = std::shared_ptr<T>;
-using vec3 = glm::vec3;
-using vec2 = glm::vec2;
-template<typename T>
-using vector = std::vector<T>;
-
-class Vertex{
+struct Vertex
+{
 public:
-    Vertex(const vec3& pos, const vec2& texCoord): m_pos(pos), m_textCoord(texCoord){}
-
-    void normalize();
-
-    inline vec3* getPos(){
-        return &m_pos;
-    }
-
-    inline void setPos(vec3 pos){m_pos =pos;};
-
-    inline vec2* getTextCoord(){
-        return &m_textCoord;
-    }
-
-protected:
+  Vertex(const vec3& pos, const vec2& texCoord): m_pos(pos), m_textCoord(texCoord){}
+  inline vec3* getPos() const{ return &m_pos; }
+  inline void setPos(const vec3& pos) { m_pos = pos; }
+  inline vec2* getTextCoord() const{ return &m_textCoord; }
+  inline void setTextCoord(const vec2& textCoord) { m_textCoord = textCoord; }
 private:
-    vec3 m_pos;
-    vec2 m_textCoord;
-};
+  vec3 m_pos;
+  vec2 m_textCoord;
+}
 
-struct HalfEdge{
-    sp<HalfEdge> next , previous, pair;
+struct HalfEdge
+{
+    sp<HalfEdge> next, previous, pair;
     sp<HE_Vert> origin;
     sp<HE_Face> face;
 };
 
-struct HE_Vert{
+struct HE_Vert
+{
     vec3 position;
     sp<HalfEdge> edge;
 };
 
-struct HE_Face{
+struct HE_Face
+{
     vec3 normal;
     sp<HalfEdge> edge;
     long int id;
 };
 
-class Mesh{
+class Mesh
+{
 public:
-    Mesh(Vertex* vertices = nullptr, unsigned int numVertices = 0, GLenum drawType = GL_TRIANGLES);
+    Mesh(GLenum drawType, long renderMask);
     virtual ~Mesh();
-    //void operator =(const Mesh& other){}
-    //Mesh(const Mesh& other){}
-    inline int getNumVertices(){return m_drawCount;};
+    void addTriangle(unsigned int index1, unsigned int index2, unsigned int index3);
+    void addQuad(unsigned int index1, unsigned int index2, unsigned int index3, unsigned int index4);
+    void addVertex(const Vertex* vert);
+    void addIndex(const unsigned int index);
+    void mapBuffers();
     void draw();
-protected:
+    void drawIndexed();
+    unsigned int getStride();
+
+    inline int getNumVertices() { return vertices.size(); }
+    inline Vertex* getVertex(unsigned int index) { return m_vertices[index]; }
+    inline long getRenderMask() { return m_renderMask; }
+
 private:
-    static const unsigned int NUM_BUFFERS = 2;
 
     enum{
         POSITION_VB,
-        TEXTCOORD_VB
+        TEXTCOORD_VB,
+        INDICES_VB,
+        NUM_BUFFERS
     };
 
-    GLuint m_vertexArrayObject;
-    GLuint m_vertexArrayBuffers[NUM_BUFFERS];
-    unsigned int m_drawCount;
-    GLenum m_drawType;
+    GLuint                  m_vertexArrayObject,
+                            m_vertexArrayBuffers[NUM_BUFFERS];
+    GLenum                  m_primType;
+    vector<Vertex*>         m_vertices;
+    vector<unsigned int>    m_indices;
+    long                    m_renderMask;
 };
 }

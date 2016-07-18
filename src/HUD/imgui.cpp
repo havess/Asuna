@@ -153,7 +153,7 @@
  Here is a change-log of API breaking changes, if you are using one of the functions listed, expect to have to fix some code.
  Also read releases logs https://github.com/ocornut/imgui/releases for more details.
 
- - 2016/05/12 (1.49) - title bar (using TitleBg/TitleBgActive colors) isn't rendered over a window background (WindowBg color) anymore. 
+ - 2016/05/12 (1.49) - title bar (using TitleBg/TitleBgActive colors) isn't rendered over a window background (WindowBg color) anymore.
                        If your TitleBg/TitleBgActive alpha was 1.0f or you are using the default theme it will not affect you. However if your TitleBg/TitleBgActive alpha was <1.0f you need to tweak your custom theme to readjust for the fact that we don't draw a WindowBg background behind the title bar.
                        This helper function will convert an old TitleBg/TitleBgActive color into a new one with the same visual output, given that color and the WindowBg color.
                            ImVec4 ConvertTitleBgCol(const ImVec4& win_bg_col, const ImVec4& title_bg_col)
@@ -429,7 +429,7 @@
       io.Fonts->LoadFromFileTTF("myfontfile.ttf", size_pixels, NULL, &config, io.Fonts->GetGlyphRangesJapanese());
 
  Q: How can I display and input non-Latin characters such as Chinese, Japanese, Korean, Cyrillic?
- A: When loading a font, pass custom Unicode ranges to specify the glyphs to load. 
+ A: When loading a font, pass custom Unicode ranges to specify the glyphs to load.
     All your strings needs to use UTF-8 encoding. Specifying literal in your source code using a local code page (such as CP-923 for Japanese or CP-1251 for Cyrillic) will not work.
     In C++11 you can encode a string literal in UTF-8 by using the u8"hello" syntax. Otherwise you can convert yourself to UTF-8 or load text data from file already saved as UTF-8.
     You can also try to remap your local codepage characters to their Unicode codepoint using font->AddRemapChar(), but international users may have problems reading/editing your source code.
@@ -441,7 +441,7 @@
     As for text input, depends on you passing the right character code to io.AddInputCharacter(). The example applications do that.
 
  Q: How can I use the drawing facilities without an ImGui window? (using ImDrawList API)
- A: The easiest way is to create a dummy window. Call Begin() with NoTitleBar|NoResize|NoMove|NoScrollbar|NoSavedSettings|NoInputs flag, zero background alpha, 
+ A: The easiest way is to create a dummy window. Call Begin() with NoTitleBar|NoResize|NoMove|NoScrollbar|NoSavedSettings|NoInputs flag, zero background alpha,
     then retrieve the ImDrawList* via GetWindowDrawList() and draw to it in any way you like.
 
  - tip: the construct 'IMGUI_ONCE_UPON_A_FRAME { ... }' will run the block of code only once a frame. You can use it to quickly add custom UI in the middle of a deep nested inner loop in your code.
@@ -484,7 +484,7 @@
  - main: IsItemHovered() info stored in a stack? so that 'if TreeNode() { Text; TreePop; } if IsHovered' return the hover state of the TreeNode?
  - input text: clean up the mess caused by converting UTF-8 <> wchar. the code is rather inefficient right now.
  - input text: reorganize event handling, allow CharFilter to modify buffers, allow multiple events? (#541)
- - input text: flag to disable live update of the user buffer (also applies to float/int text input) 
+ - input text: flag to disable live update of the user buffer (also applies to float/int text input)
  - input text: resize behavior - field could stretch when being edited? hover tooltip shows more text?
  - input text: add ImGuiInputTextFlags_EnterToApply? (off #218)
  - input text multi-line: don't directly call AddText() which does an unnecessary vertex reserve for character count prior to clipping. and/or more line-based clipping to AddText(). and/or reorganize TextUnformatted/RenderText for more efficiency for large text (e.g TextUnformatted could clip and log separately, etc).
@@ -607,6 +607,7 @@
 #define IMGUI_DEFINE_PLACEMENT_NEW
 #include "imgui_internal.h"
 
+#include <iostream>
 #include <ctype.h>      // toupper, isprint
 #include <math.h>       // sqrtf, fabsf, fmodf, powf, cosf, sinf, floorf, ceilf
 #include <stdlib.h>     // NULL, malloc, free, qsort, atoi
@@ -830,7 +831,7 @@ ImGuiIO::ImGuiIO()
     WordMovementUsesAltKey = true;      // OS X style: Text editing cursor movement using Alt instead of Ctrl
     ShortcutsUseSuperKey = true;        // OS X style: Shortcuts using Cmd/Super instead of Ctrl
     DoubleClickSelectsWord = true;      // OS X style: Double click selects by word instead of selecting whole text
-    MultiSelectUsesSuperKey = true;     // OS X style: Multi-selection in lists uses Cmd/Super instead of Ctrl 
+    MultiSelectUsesSuperKey = true;     // OS X style: Multi-selection in lists uses Cmd/Super instead of Ctrl
 #endif
 }
 
@@ -2422,12 +2423,12 @@ static void AddDrawListToRenderList(ImVector<ImDrawList*>& out_render_list, ImDr
     // Draw list sanity check. Detect mismatch between PrimReserve() calls and incrementing _VtxCurrentIdx, _VtxWritePtr etc.
     IM_ASSERT(draw_list->_VtxWritePtr == draw_list->VtxBuffer.Data + draw_list->VtxBuffer.Size);
     IM_ASSERT(draw_list->_IdxWritePtr == draw_list->IdxBuffer.Data + draw_list->IdxBuffer.Size);
-    IM_ASSERT((int)draw_list->_VtxCurrentIdx == draw_list->VtxBuffer.Size);                   
+    IM_ASSERT((int)draw_list->_VtxCurrentIdx == draw_list->VtxBuffer.Size);
 
     // Check that draw_list doesn't use more vertices than indexable (default ImDrawIdx = 2 bytes = 64K vertices)
     // If this assert triggers because you are drawing lots of stuff manually, A) workaround by calling BeginChild()/EndChild() to put your draw commands in multiple draw lists, B) #define ImDrawIdx to a 'unsigned int' in imconfig.h and render accordingly.
     IM_ASSERT((int64_t)draw_list->_VtxCurrentIdx <= ((int64_t)1L << (sizeof(ImDrawIdx)*8)));  // Too many vertices in same ImDrawList. See comment above.
-    
+
     out_render_list.push_back(draw_list);
     GImGui->IO.MetricsRenderVertices += draw_list->VtxBuffer.Size;
     GImGui->IO.MetricsRenderIndices += draw_list->IdxBuffer.Size;
@@ -2605,9 +2606,8 @@ void ImGui::Render()
         g.RenderDrawData.CmdListsCount = g.RenderDrawLists[0].Size;
         g.RenderDrawData.TotalVtxCount = g.IO.MetricsRenderVertices;
         g.RenderDrawData.TotalIdxCount = g.IO.MetricsRenderIndices;
-
         // Render. If user hasn't set a callback then they may retrieve the draw data via GetDrawData()
-        if (g.RenderDrawData.CmdListsCount > 0 && g.IO.RenderDrawListsFn != NULL)
+        if (g.RenderDrawData.CmdListsCount > 0 && g.IO.RenderDrawListsFn != NULL)\
             g.IO.RenderDrawListsFn(&g.RenderDrawData);
     }
 }
@@ -5364,7 +5364,7 @@ bool ImGui::ButtonBehavior(const ImRect& bb, ImGuiID id, bool* out_hovered, bool
                 SetActiveID(0);
             }
 
-            // 'Repeat' mode acts when held regardless of _PressedOn flags (see table above). 
+            // 'Repeat' mode acts when held regardless of _PressedOn flags (see table above).
             // Relies on repeat logic of IsMouseClicked() but we may as well do it ourselves if we end up exposing finer RepeatDelay/RepeatRate settings.
             if ((flags & ImGuiButtonFlags_Repeat) && g.ActiveId == id && g.IO.MouseDownDuration[0] > 0.0f && ImGui::IsMouseClicked(0, true))
                 pressed = true;
