@@ -11,7 +11,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "../../external/glm/glm.hpp"
+#include <map>
+#include "glm/glm.hpp"
 #include <GL/glew.h>
 
 namespace Asuna

@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <iostream>
 
-#include "../../includes/Asuna/Asuna.hpp"
+#include "../../includes/Asuna/Geometry/Sphere.hpp"
 
 namespace Asuna
 {
   void Sphere::genMesh()
   {
-    m_mesh = up<Mesh>(Mesh(GL_TRIANGLES, MESH_INDEXED));
+    m_mesh = std::make_shared<Mesh>(Mesh(GL_TRIANGLES, MESH_INDEXED));
     double t = (1.0 + sqrt(5.0)) / 2.0;
 
     Vertex* vertices[] = {
@@ -61,9 +61,16 @@ namespace Asuna
 
     for(int i = 0; i < SPHERE_ITERATIONS; i++)
     {
-      //TODO: implement stride function, finish this refactor, refactor plane, grid, test it.
-      for(int )
-      Vertex *v1 = m_mesh->getVertex(i);
+      for(int i = 0; i < m_mesh->getNumVertices(); i += 3)
+      {
+        unsigned int v1 = getMidpoint(m_mesh->getIndex(i), m_mesh->getIndex(i+1)),
+                     v2 = getMidpoint(m_mesh->getIndex(i), m_mesh->getIndex(i+2)),
+                     v3 = getMidpoint(m_mesh->getIndex(i+1), m_mesh->getIndex(i+2));
+        m_mesh->addTriangle(v1, v2, v3);
+        m_mesh->addTriangle(v1, v2, m_mesh->getIndex(i));
+        m_mesh->addTriangle(v1, v3, m_mesh->getIndex(i+1));
+        m_mesh->addTriangle(v2, v3, m_mesh->getIndex(i+2));
+      }
     }
 
   }
@@ -99,6 +106,4 @@ namespace Asuna
 
     return m_vertices.size() - 1;
   }
-
-
 }

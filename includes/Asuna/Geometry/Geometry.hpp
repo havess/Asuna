@@ -16,7 +16,6 @@ This is the geometry *super* class. All primitives will be derived from this cla
 #include <iostream>
 #include <vector>
 #include <map>
-#include "glm/glm.hpp"
 #include "../Common.hpp"
 #include "../Mesh.hpp"
 #include <GL/glew.h>
@@ -29,12 +28,12 @@ public:
 
   //getters
   inline vec3* getPosition() { return &m_position; }
-  inline up<Mesh> getMesh() { return m_mesh; }
+  inline sp<Mesh> getMesh() { return m_mesh; }
 
 protected:
   Geometry(const vec3& position = vec3(0,0,0)): m_position(position) {}
   virtual void genMesh() = 0;
-  up<Mesh> m_mesh;
+  sp<Mesh> m_mesh;
 private:
   vec3 m_position;
 };

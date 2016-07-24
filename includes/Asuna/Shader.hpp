@@ -27,8 +27,8 @@ private:
     void operator=(const Shader& other){}
 
     enum{
-        TRANSFORM_U,
-        NUM_UNIFORMS
+        TRANSFORM_U, //0
+        NUM_UNIFORMS //1
     };
 
     //program handle

@@ -34,6 +34,5 @@ private:
 
   map<long int, int> m_middlePointCache;
   float m_radius;
-  IcoSphereGenerator m_icoGen;
 };
 }
