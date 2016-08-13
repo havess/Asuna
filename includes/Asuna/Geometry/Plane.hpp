@@ -58,7 +58,7 @@ public:
         }
 
         Vertex* verts = &vertices[0];
-        m_mesh = std::shared_ptr<Mesh>(new Mesh(verts, (int) vertices.size(), GL_LINES));
+        m_mesh = std::make_shared<Mesh>(Mesh(GL_TRIANGLES, DRAW_BASIC));
     }
 
 protected:

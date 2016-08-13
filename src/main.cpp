@@ -32,12 +32,14 @@ int main(int argc, const char * argv[])
     Asuna::Camera camera(vec3(-200,-300,200), 70.0f, display.getAspectRatio(), 0.0f, 2000.0f, vec3(200,300,-200));
 
     /**********setup************/
+    printf("Initializing demo handler\n");
     demoHandler.init(SPHERE_DEMO);
 
     /***********'draw loop'**********/
+    printf("Starting draw loop\n");
     while(!display.isClosed())
     {
-      display.clear(1.0f, 1.0f, 1.0f, 1.0f);
+      display.clear(0.5f, 0.6f, 0.55f, 1.0f);
       shader.bind();
       input.applyKeyPresses(transform, camera);
       shader.update(transform, camera);
@@ -45,6 +47,5 @@ int main(int argc, const char * argv[])
       //this needs to be called last
       display.update();
     }
-    display.update();
     return 0;
 }

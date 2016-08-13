@@ -20,6 +20,7 @@ template<typename T, typename K>
 using map = std::map<T,K>;
 
 enum DemoEnum{
+  BASIC_DEMO,
   SPHERE_DEMO,
   DEMO_COUNT
 };
@@ -40,6 +41,37 @@ protected:
   virtual ~DemoTemplate(){}
 private:
   DemoEnum type;
+};
+
+struct BasicDemo: public DemoTemplate
+{
+public:
+  BasicDemo(const vec3 position = vec3()) : m_position(position), DemoTemplate(BASIC_DEMO){}
+  virtual bool init()
+  {
+     m_mesh = std::make_shared<Mesh>(Mesh(GL_LINES, DRAW_BASIC));
+     if (m_mesh == nullptr) return false;
+     printf("Initializing basic demo\n");
+     m_mesh->setOffset(m_position);
+     m_mesh->addVertex(new Vertex(vec3(0,0,0), vec2(0,0)));
+     m_mesh->addVertex(new Vertex(vec3(1,0,1), vec2(0,0)));
+     m_mesh->addVertex(new Vertex(vec3(0,0,1), vec2(0,0)));
+     m_mesh->mapBuffers();
+     return true;
+  }
+
+  virtual bool shutDown()
+  {
+    return true;
+  }
+
+  virtual void execute()
+  {
+    m_mesh->draw();
+  }
+private:
+  vec3     m_position;
+  sp<Mesh> m_mesh;
 };
 
 struct SphereDemo: public DemoTemplate{
@@ -71,10 +103,11 @@ public:
   virtual ~DemoHandler(){}
 
   bool init(DemoEnum type){
-    if(type < SPHERE_DEMO || type > SPHERE_DEMO) {return false;}
+    if(type > SPHERE_DEMO) {return false;}
     if(!demos.count(type)){
       demos[type] = getDemo(type);
     }
+    demos[type]->init();
     return true;
   }
   bool shutDown(DemoEnum type){
@@ -91,7 +124,10 @@ private:
   DemoTemplate* getDemo(DemoEnum type){
     switch(type){
       //specify parameters if you want it to be non default
-      case SPHERE_DEMO: return new SphereDemo();
+      case SPHERE_DEMO:
+          return new SphereDemo(vec3(0,0,0), 75.0f);
+      case BASIC_DEMO:
+          return new BasicDemo();
       default: std::cerr << "Error: the specified DemoEnum is invalid" << std::endl;
     }
     return nullptr;

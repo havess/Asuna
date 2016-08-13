@@ -14,13 +14,13 @@
 #include "../Mesh.hpp"
 #include <GL/glew.h>
 
-#define SPHERE_ITERATIONS 5
+#define SPHERE_ITERATIONS 6
 
 namespace Asuna{
 
 class Sphere: public Geometry{
 public:
-  Sphere::Sphere(vec3 position, const float radius): Geometry(position), m_radius(radius){}
+  Sphere(vec3 position, const float radius): Geometry(position), m_radius(radius){}
 
   void genMesh();
 
@@ -29,7 +29,7 @@ public:
 
 protected:
 private:
-  void normalize(Vertex& vertex, const float length = 1);
+  void normalize(Vertex* vertex, const float length);
   unsigned int getMidpoint(const unsigned int iA,const unsigned int iB);
 
   map<long int, int> m_middlePointCache;

@@ -178,7 +178,7 @@ std::shared_ptr<Mesh> QuickHull::getHull(){
             edge = edge->next;
         }
     }
-    return std::shared_ptr<Mesh>(new Mesh(&vertices[0], (uint) vertices.size(), GL_TRIANGLES));
+    return std::shared_ptr<Mesh>(new Mesh(GL_TRIANGLES, DRAW_BASIC));
 }
 
 std::shared_ptr<HE_Face> makeTriFace(std::shared_ptr<HalfEdge> he1, std::shared_ptr<HalfEdge> he2, std::shared_ptr<HalfEdge> he3){

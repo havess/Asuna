@@ -9,11 +9,12 @@
 
 #include "Common.hpp"
 
-//render mask macros here
-#define MESH_INDEXED 1
 
-//render mask offsets go here
-#define INDEXED_OFFSET 0
+enum Asuna_Draw_Type
+{
+  DRAW_BASIC,
+  DRAW_INDEXED
+};
 
 #ifdef __APPLE__
 #define glGenVertexArrays glGenVertexArraysAPPLE
@@ -31,6 +32,7 @@ struct Vertex
 {
 public:
   Vertex(const vec3& pos, const vec2& texCoord): m_pos(pos), m_textCoord(texCoord){}
+  ~Vertex(){printf("Vertex is getting destroyed");}
   inline vec3* getPos(){ return &m_pos; }
   inline void setPos(const vec3& pos) { m_pos = pos; }
   inline vec2* getTextCoord(){ return &m_textCoord; }
@@ -63,7 +65,7 @@ struct HE_Face
 class Mesh
 {
 public:
-    Mesh(GLenum drawType, long renderMask);
+    Mesh(GLenum drawType, Asuna_Draw_Type renderMask);
     virtual ~Mesh();
     void addTriangle(unsigned int index1, unsigned int index2, unsigned int index3);
     void addQuad(unsigned int index1, unsigned int index2, unsigned int index3, unsigned int index4);
@@ -72,10 +74,14 @@ public:
     void mapBuffers();
     void draw();
     void drawIndexed();
+    void calculateNormals();
     unsigned int getStride();
 
     inline void setOffset(const vec3& offset) { m_offset = offset; }
-    inline int getNumVertices() { return (m_indices.size()) ? m_indices.size():m_vertices.size(); }
+    inline void eraseIndices(const unsigned int a, const unsigned int b) { m_indices.erase(m_indices.begin() + a, m_indices.begin() + b );}
+    inline void eraseVertices(const unsigned int a, const unsigned int b) { m_vertices.erase(m_vertices.begin() + a, m_vertices.begin() + b) ;}
+    inline int getNumIndices() { return m_indices.size();}
+    inline int getNumVertices() { return m_vertices.size();}
     inline Vertex* getVertex(unsigned int index) { return m_vertices[index]; }
     inline unsigned int getIndex(unsigned int index) { return m_indices[index]; }
     inline long getRenderMask() { return m_renderMask; }
@@ -95,6 +101,10 @@ private:
     vec3                    m_offset = vec3(0,0,0);
     vector<Vertex*>         m_vertices;
     vector<unsigned int>    m_indices;
-    long                    m_renderMask;
+    vector<vec3>            m_normals;
+    Asuna_Draw_Type         m_renderMask;
+
+    void calculateNormalsIndexed();
+    void normalize();
 };
 }

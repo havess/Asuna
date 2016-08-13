@@ -17,8 +17,9 @@ void Geometry::render()
   //generate mesh and set initial world position
   if(!m_mesh)
   {
-    genMesh();
     m_mesh->setOffset(m_position);
+    genMesh();
+    m_mesh->mapBuffers();
   }
 
   if(m_mesh->getRenderMask() & (1 << INDEXED_OFFSET))
