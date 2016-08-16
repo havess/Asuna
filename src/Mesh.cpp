@@ -7,6 +7,7 @@
 //
 
 #include "../includes/Asuna/Mesh.hpp"
+#include "../includes/Asuna/Common.hpp"
 #include <vector>
 #include <iostream>
 
@@ -80,7 +81,7 @@ void Mesh::calculateNormals()
   for(int i = 0; i < getNumVertices(); i += 3)
   {
     vec3 p1 = *m_vertices[i]->getPos(), p2 = *m_vertices[i+1]->getPos(), p3 = *m_vertices[i+2]->getPos();
-    m_normals.push_back(normalize(glm::cross((p2 - p1), (p3-p1))));
+    //m_normals.push_back(normalize(glm::cross((p2 - p1), (p3-p1))));
   }
 }
 
@@ -88,7 +89,7 @@ void Mesh::calculateNormalsIndexed()
 {
   //TODO: implement this
   int n = m_renderMask & (1 << DRAW_INDEXED) ? getNumIndices():getNumVertices();
-  for(int i = 0; i < )
+  //for(int i = 0; i < )
 }
 
 void Mesh::mapBuffers()
@@ -123,7 +124,7 @@ void Mesh::mapBuffers()
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
   CheckOpenGLError("Mesh: VertexAttribPointer", 90);
 
-  if(m_renderMask & (1 << INDEXED_OFFSET))
+  if(m_renderMask == DRAW_INDEXED)
   {
     printf("Mapping element array buffer\n");
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vertexArrayBuffers[INDICES_VB]);

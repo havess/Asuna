@@ -30,10 +30,11 @@ Display::Display(const glm::vec2& size, const std::string& title, const bool hud
     m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         size.x, size.y, SDL_WINDOW_OPENGL);
     m_glContext = SDL_GL_CreateContext(m_window);
-    /*if(hud){
+    if(hud){
       m_hud = new HUD(m_window, "Asuna");
-    }*/
-    //m_hud->init();
+      m_hud->init();
+    }
+
     //this is doing weird stuff on mac, figure it out later
   //  SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     //SDL_ShowCursor(true);
@@ -58,7 +59,7 @@ Display::~Display()
 
 bool Display::isClosed() const
 {
-    //m_hud->beginHUD();
+    m_hud->beginHUD();
     return m_isClosed;
 }
 

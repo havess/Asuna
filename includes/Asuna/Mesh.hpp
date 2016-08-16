@@ -105,6 +105,5 @@ private:
     Asuna_Draw_Type         m_renderMask;
 
     void calculateNormalsIndexed();
-    void normalize();
 };
 }

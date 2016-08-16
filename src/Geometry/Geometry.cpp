@@ -22,7 +22,7 @@ void Geometry::render()
     m_mesh->mapBuffers();
   }
 
-  if(m_mesh->getRenderMask() & (1 << INDEXED_OFFSET))
+  if(m_mesh->getRenderMask() == DRAW_INDEXED)
   {
      m_mesh->drawIndexed();
   }

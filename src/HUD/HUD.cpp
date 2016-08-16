@@ -14,6 +14,7 @@ MORE DOCUMENTATION TO COME, CALM YOUR SHIT!!
 #include "GL/glew.h"
 #include <stdio.h>
 #include "../../includes/Asuna/HUD/HUD.hpp"
+#include "../../includes/Asuna/Common.hpp"
 
 static SDL_Window*     g_window;
 static std::string     g_title;
@@ -59,6 +60,7 @@ static void RenderDrawLists(ImDrawData* draw_data)
   GLboolean last_enable_cull_face = glIsEnabled(GL_CULL_FACE);
   GLboolean last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST);
   GLboolean last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST);
+  CheckOpenGLError("State backup", 57);
 
   // Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled
   glEnable(GL_BLEND);
@@ -68,9 +70,11 @@ static void RenderDrawLists(ImDrawData* draw_data)
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_SCISSOR_TEST);
   glActiveTexture(GL_TEXTURE0);
+  CheckOpenGLError("State setup", 75);
 
   // Setup orthographic projection matrix
   glViewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
+  CheckOpenGLError("Viewport", 84);
   const float ortho_projection[4][4] =
   {
       { 2.0f/io.DisplaySize.x, 0.0f,                   0.0f, 0.0f },
@@ -79,8 +83,10 @@ static void RenderDrawLists(ImDrawData* draw_data)
       {-1.0f,                  1.0f,                   0.0f, 1.0f },
   };
   glUseProgram(g_shaderHandle);
+  CheckOpenGLError("Program", 85);
   glUniform1i(g_attribLocationTex, 0);
   glUniformMatrix4fv(g_attribLocationProjMtx, 1, GL_FALSE, &ortho_projection[0][0]);
+    CheckOpenGLError("Program + uniforms", 94);
   GLenum error = GL_NO_ERROR;
     error = glGetError();
     if (GL_NO_ERROR != error) {
@@ -304,32 +310,8 @@ bool HUD::createDevices()
   glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
   glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
   glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
-
-  const GLchar *vertex_shader =
-      "#version 330\n"
-      "uniform mat4 ProjMtx;\n"
-      "in vec2 Position;\n"
-      "in vec2 UV;\n"
-      "in vec4 Color;\n"
-      "out vec2 Frag_UV;\n"
-      "out vec4 Frag_Color;\n"
-      "void main()\n"
-      "{\n"
-      "	Frag_UV = UV;\n"
-      "	Frag_Color = Color;\n"
-      "	gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
-      "}\n";
-
-  const GLchar* fragment_shader =
-      "#version 330\n"
-      "uniform sampler2D Texture;\n"
-      "in vec2 Frag_UV;\n"
-      "in vec4 Frag_Color;\n"
-      "out vec4 Out_Color;\n"
-      "void main()\n"
-      "{\n"
-      "	Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
-      "}\n";
+  CheckOpenGLError("Get state", 313);
+  m_shader = = std::make_unique<Shader>("hudShader");
 
   g_shaderHandle = glCreateProgram();
   g_vertHandle = glCreateShader(GL_VERTEX_SHADER);
@@ -338,30 +320,39 @@ bool HUD::createDevices()
   glShaderSource(g_fragHandle, 1, &fragment_shader, 0);
   glCompileShader(g_vertHandle);
   glCompileShader(g_fragHandle);
+  CheckOpenGLError("Shader compile", 348);
   glAttachShader(g_shaderHandle, g_vertHandle);
   glAttachShader(g_shaderHandle, g_fragHandle);
   glLinkProgram(g_shaderHandle);
+  GLint status;
+  glGetProgramiv(g_shaderHandle, GL_LINK_STATUS, &status);
+  if( status == GL_FALSE) printf("Program did not link\n");
+  CheckOpenGLError("Program link", 352);
 
   g_attribLocationTex = glGetUniformLocation(g_shaderHandle, "Texture");
   g_attribLocationProjMtx = glGetUniformLocation(g_shaderHandle, "ProjMtx");
   g_attribLocationPosition = glGetAttribLocation(g_shaderHandle, "Position");
   g_attribLocationUV = glGetAttribLocation(g_shaderHandle, "UV");
   g_attribLocationColor = glGetAttribLocation(g_shaderHandle, "Color");
+  CheckOpenGLError("Unis and attribs", 359);
 
   glGenBuffers(1, &g_vboHandle);
   glGenBuffers(1, &g_elementsHandle);
 
   glGenVertexArraysAPPLE(1, &g_vaoHandle);
   glBindVertexArrayAPPLE(g_vaoHandle);
+  CheckOpenGLError("Bind VAO", 343);
   glBindBuffer(GL_ARRAY_BUFFER, g_vboHandle);
   glEnableVertexAttribArray(g_attribLocationPosition);
   glEnableVertexAttribArray(g_attribLocationUV);
   glEnableVertexAttribArray(g_attribLocationColor);
+  CheckOpenGLError("Enable Attrib Arrays", 343);
 
   #define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
   glVertexAttribPointer(g_attribLocationPosition, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos));
   glVertexAttribPointer(g_attribLocationUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
   glVertexAttribPointer(g_attribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
+  CheckOpenGLError("Attrib pointer", 377);
   #undef OFFSETOF
 
   createFontsTexture();

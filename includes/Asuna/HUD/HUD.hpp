@@ -52,5 +52,7 @@ private:
   bool createFontsTexture();
   bool createDevices();
   bool invalidateDevices();
+
+  up<Shader> m_shader;
 };
 }
