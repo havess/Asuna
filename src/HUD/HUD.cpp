@@ -311,13 +311,12 @@ bool HUD::createDevices()
   glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
   glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
   CheckOpenGLError("Get state", 313);
-  m_shader = = std::make_unique<Shader>("hudShader");
 
   g_shaderHandle = glCreateProgram();
   g_vertHandle = glCreateShader(GL_VERTEX_SHADER);
   g_fragHandle = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(g_vertHandle, 1, &vertex_shader, 0);
-  glShaderSource(g_fragHandle, 1, &fragment_shader, 0);
+  //glShaderSource(g_vertHandle, 1, &vertex_shader, 0);
+  //lShaderSource(g_fragHandle, 1, &fragment_shader, 0);
   glCompileShader(g_vertHandle);
   glCompileShader(g_fragHandle);
   CheckOpenGLError("Shader compile", 348);

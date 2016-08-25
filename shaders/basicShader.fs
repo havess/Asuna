@@ -1,6 +1,6 @@
 #version 120
 
-in vec2 texCoord0;
+varying vec2 texCoord0;
 
 uniform sampler2D sampler;
 

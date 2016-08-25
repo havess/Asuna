@@ -30,8 +30,10 @@ int main(int argc, const char * argv[])
     Asuna::Camera camera(vec3(-200,-300,200), 70.0f, display.getAspectRatio(), 0.0f, 2000.0f, vec3(200,300,-200));
 
     /**********setup************/
-    Asuna::ProgramObject pObj();
+    Asuna::ProgramObject pObj;
     pObj.createVertexShader("./shaders/basicShader.vs");
+    pObj.bindAttribLocation(0, "position");
+    pObj.bindAttribLocation(1, "texCoord");
     pObj.createFragmentShader("./shaders/basicShader.fs");
     pObj.link();
     printf("Initializing demo handler\n");
@@ -44,7 +46,7 @@ int main(int argc, const char * argv[])
       display.clear(0.5f, 0.6f, 0.55f, 1.0f);
       pObj.bind();
       input.applyKeyPresses(transform, camera);
-      shader.update(transform, camera);
+      pObj.update(transform, camera);
       demoHandler.execute();
       //this needs to be called last
       display.update();

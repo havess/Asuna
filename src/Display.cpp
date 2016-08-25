@@ -31,8 +31,8 @@ Display::Display(const glm::vec2& size, const std::string& title, const bool hud
         size.x, size.y, SDL_WINDOW_OPENGL);
     m_glContext = SDL_GL_CreateContext(m_window);
     if(hud){
-      m_hud = new HUD(m_window, "Asuna");
-      m_hud->init();
+      //m_hud = new HUD(m_window, "Asuna");
+      //m_hud->init();
     }
 
     //this is doing weird stuff on mac, figure it out later
@@ -59,7 +59,7 @@ Display::~Display()
 
 bool Display::isClosed() const
 {
-    m_hud->beginHUD();
+    //m_hud->beginHUD();
     return m_isClosed;
 }
 

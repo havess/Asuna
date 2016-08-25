@@ -7,7 +7,7 @@ namespace Asuna
 {
   void Sphere::genMesh()
   {
-    m_mesh = std::make_shared<Mesh>(Mesh(GL_TRIANGLES, DRAW_INDEXED));
+    m_mesh = std::make_shared<Mesh>(GL_TRIANGLES, DRAW_INDEXED);
     double t = (1.0 + sqrt(5.0)) / 2.0;
 
     Vertex* vertices[] = {
@@ -61,8 +61,6 @@ namespace Asuna
       n = m_mesh->getNumIndices();
       for(int j = 0; j < n; j += 3)
       {
-        /*printf("getting midpoint i = %d : %d i+1: %d i+2: %d numVertices: %d numIndices: %d\n", i, m_mesh->getIndex(j), m_mesh->getIndex(j+1), m_mesh->getIndex(j+2),
-          m_mesh->getNumVertices(), m_mesh->getNumIndices());*/
         unsigned int v1 = getMidpoint(m_mesh->getIndex(j), m_mesh->getIndex(j+1)),
                      v2 = getMidpoint(m_mesh->getIndex(j), m_mesh->getIndex(j+2)),
                      v3 = getMidpoint(m_mesh->getIndex(j+1), m_mesh->getIndex(j+2));
@@ -74,7 +72,6 @@ namespace Asuna
       m_mesh->eraseIndices(0, n);
     }
     m_mesh->mapBuffers();
-    printf("Sphere has %d vertices and %d indices\n", m_mesh->getNumVertices(), m_mesh->getNumIndices());
   }
 
   void Sphere::normalize(Vertex* vert, const float length)

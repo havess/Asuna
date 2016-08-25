@@ -18,6 +18,8 @@ This is the general hud class. This will be what is instantied for the HUD overl
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include "glm/glm.hpp"
+#include "../Common.hpp"
+#include "../ProgramObject.hpp"
 #include "../../../external/imgui/imgui.h"
 
 template<typename T>
@@ -53,6 +55,6 @@ private:
   bool createDevices();
   bool invalidateDevices();
 
-  up<Shader> m_shader;
+  ProgramObject m_pObj;
 };
 }
