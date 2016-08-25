@@ -82,5 +82,7 @@ void Display::update()
             m_isClosed = true;
         }
     }
+    /* unbind program */
+    //glUseProgram(0);
 }
 }

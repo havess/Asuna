@@ -29,11 +29,12 @@ using up = std::unique_ptr<T>;
 using vec3 = glm::vec3;
 using vec2 = glm::vec2;
 using mat4 = glm::mat4;
-using mat3 = glm::mat3; 
+using mat3 = glm::mat3;
 template<typename T>
 using vector = std::vector<T>;
 template<typename T, typename N>
 using map = std::map<T, N>;
 template<typename T, typename N>
 using pair = std::pair<T, N>;
+using string = std::string;
 }

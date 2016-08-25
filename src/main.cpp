@@ -19,12 +19,10 @@ using vec2 = glm::vec2;
 template<typename T>
 using vector = std::vector<T>;
 
-
 int main(int argc, const char * argv[])
 {
     /*********inits**************/
     Asuna::Display display(vec2(1000,700), "3D QuickHull", true);
-    Asuna::Shader shader("basicShader");
     Asuna::Input input;
     Asuna::DemoHandler demoHandler;
 
@@ -32,6 +30,10 @@ int main(int argc, const char * argv[])
     Asuna::Camera camera(vec3(-200,-300,200), 70.0f, display.getAspectRatio(), 0.0f, 2000.0f, vec3(200,300,-200));
 
     /**********setup************/
+    Asuna::ProgramObject pObj();
+    pObj.createVertexShader("./shaders/basicShader.vs");
+    pObj.createFragmentShader("./shaders/basicShader.fs");
+    pObj.link();
     printf("Initializing demo handler\n");
     demoHandler.init(SPHERE_DEMO);
 
@@ -40,7 +42,7 @@ int main(int argc, const char * argv[])
     while(!display.isClosed())
     {
       display.clear(0.5f, 0.6f, 0.55f, 1.0f);
-      shader.bind();
+      pObj.bind();
       input.applyKeyPresses(transform, camera);
       shader.update(transform, camera);
       demoHandler.execute();
