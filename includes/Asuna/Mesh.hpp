@@ -44,22 +44,19 @@ private:
 
 struct HalfEdge
 {
+    HalfEdge(const sp<HalfEdge> next, const sp<HalfEdge> prev, const sp<HalfEdge> pair, unsigned int origin, const sp<HE_Face> face) : next(next), previous(prev), pair(pair),
+      origin(origin), face(face){};
     sp<HalfEdge> next, previous, pair;
-    sp<HE_Vert> origin;
+    unsigned int origin;
     sp<HE_Face> face;
-};
-
-struct HE_Vert
-{
-    vec3 position;
-    sp<HalfEdge> edge;
 };
 
 struct HE_Face
 {
+public:
+    HE_Face(const vec3& normal, const sp<HalfEdge> edge) : normal(normal), edge(edge) {}
     vec3 normal;
     sp<HalfEdge> edge;
-    long int id;
 };
 
 class Mesh
@@ -77,7 +74,7 @@ public:
     void calculateNormals();
     unsigned int getStride();
 
-    inline void setOffset(const vec3& offset) { m_offset = offset; }
+    void setOffset(const vec3& offset) { m_offset = offset;}
     inline void eraseIndices(const unsigned int a, const unsigned int b) { m_indices.erase(m_indices.begin() + a, m_indices.begin() + b );}
     inline void eraseVertices(const unsigned int a, const unsigned int b) { m_vertices.erase(m_vertices.begin() + a, m_vertices.begin() + b) ;}
     inline int getNumIndices() { return m_indices.size();}
@@ -98,11 +95,11 @@ private:
     GLuint                  m_vertexArrayObject,
                             m_vertexArrayBuffers[NUM_BUFFERS];
     GLenum                  m_primType;
-    vec3                    m_offset = vec3(0,0,0);
     vector<Vertex*>         m_vertices;
     vector<unsigned int>    m_indices;
     vector<vec3>            m_normals;
     Asuna_Draw_Type         m_renderMask;
+    vec3                    m_offset;
 
     void calculateNormalsIndexed();
 };

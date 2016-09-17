@@ -5,27 +5,18 @@
 
 namespace Asuna
 {
-  void Sphere::genMesh()
+  void Cone::genMesh()
   {
     m_mesh = std::make_shared<Mesh>(GL_TRIANGLES, DRAW_INDEXED);
     double t = (1.0 + sqrt(5.0)) / 2.0;
 
     /* These are passed to the mesh so they will be deleted on mesh destruction */
     Vertex* vertices[] = {
-        new Vertex(vec3(-1,  t,  0), vec2(0,0)),
-        new Vertex(vec3( 1,  t,  0), vec2(0,0)),
-        new Vertex(vec3(-1, -t,  0), vec2(0,0)),
-        new Vertex(vec3( 1, -t,  0), vec2(0,0)),
+        //center base vertex
+        new Vertex(m_position + (m_height/2)*(-m_direction), vec2(0,0)),
+        //apex vertex
+        new Vertex(m_position + (m_height/2)*(m_direction), vec2(0,0)),
 
-        new Vertex(vec3( 0, -1,  t), vec2(0,0)),
-        new Vertex(vec3( 0,  1,  t), vec2(0,0)),
-        new Vertex(vec3( 0, -1, -t), vec2(0,0)),
-        new Vertex(vec3( 0,  1, -t), vec2(0,0)),
-
-        new Vertex(vec3( t,  0, -1), vec2(0,0)),
-        new Vertex(vec3( t,  0,  1), vec2(0,0)),
-        new Vertex(vec3(-t,  0, -1), vec2(0,0)),
-        new Vertex(vec3(-t,  0,  1), vec2(0,0))
     };
 
     for(int i = 0 ; i < 12; i++){

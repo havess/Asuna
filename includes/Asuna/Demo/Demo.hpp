@@ -3,6 +3,9 @@
 #include <iostream>
 
 #include "../Geometry/Sphere.hpp"
+#include "../QuickHull.hpp"
+#include "../Common.hpp"
+#include <cstdlib>
 
 /*
 This is an interface for generating demos that will be callable from the console in the hud, this would reduce the
@@ -22,6 +25,7 @@ using map = std::map<T,K>;
 enum DemoEnum{
   BASIC_DEMO,
   SPHERE_DEMO,
+  QUICKHULL_DEMO,
   DEMO_COUNT
 };
 
@@ -97,13 +101,55 @@ private:
   Asuna::Sphere* m_sphere;
 };
 
+struct QuickHullDemo: public DemoTemplate
+{
+public:
+  QuickHullDemo(unsigned int points, int lowerBound, int higherBound) : DemoTemplate(QUICKHULL_DEMO), m_numPoints(points),
+    m_lowerBound(lowerBound), m_higherBound(higherBound){}
+  virtual ~QuickHullDemo(){shutDown();}
+  virtual bool init(){
+    std::vector<glm::vec3> points;
+    for(int i = 0; i < m_numPoints; i++)
+    {
+      int modulo = 500;
+      double x = rand() % modulo + m_lowerBound;
+      double y = rand() % modulo + m_lowerBound;
+      double z = rand() % modulo + m_lowerBound;
+      points.push_back(vec3(x, y, z));
+      sp<Sphere> sphere = std::make_shared<Sphere>(vec3(x,y,z), 10.0f);
+      m_spheres.push_back(sphere);
+    }
+    m_hull = new QuickHull(&points[0] , points.size());
+    m_hull->genHull();
+    m_mesh = m_hull->getHull();
+    return true;
+  }
+  virtual bool shutDown(){
+    delete m_hull;
+    return true;
+  }
+  virtual void execute(){
+    for(int i = 0; i < m_numPoints; i++)
+    {
+      m_spheres[i]->render();
+    }
+    m_mesh->drawIndexed();
+  }
+private:
+  const unsigned int m_numPoints;
+  int m_lowerBound, m_higherBound;
+  Asuna::QuickHull* m_hull;
+  sp<Mesh>          m_mesh;
+  vector<sp<Sphere>>  m_spheres;
+};
+
 class DemoHandler{
 public:
   DemoHandler(){}
   virtual ~DemoHandler(){}
 
   bool init(DemoEnum type){
-    if(type > SPHERE_DEMO) {return false;}
+    if(type >= DEMO_COUNT) {return false;}
     if(!demos.count(type)){
       demos[type] = getDemo(type);
     }
@@ -125,9 +171,11 @@ private:
     switch(type){
       //specify parameters if you want it to be non default
       case SPHERE_DEMO:
-          return new SphereDemo(vec3(0,0,0), 75.0f);
+        return new SphereDemo(vec3(0,0,0), 150.0f);
       case BASIC_DEMO:
-          return new BasicDemo();
+        return new BasicDemo();
+      case QUICKHULL_DEMO:
+        return new QuickHullDemo(10, -250, 250);
       default: std::cerr << "Error: the specified DemoEnum is invalid" << std::endl;
     }
     return nullptr;

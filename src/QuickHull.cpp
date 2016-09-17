@@ -12,32 +12,23 @@
 
 namespace Asuna{
 
-double getDistanceFromPlane(const glm::vec3& point, const HE_Vert& vertex, const glm::vec3& normal);
-HE_Vert* getMax(HE_Vert* vertices, unsigned long const numVertices);
-std::pair<HE_Vert, HE_Vert> mostDistantPoints(HE_Vert vertices[], int numVertices);
-HE_Vert mostDistantFromLine(HE_Vert* vertices, int numPairs, HE_Vert& p1, HE_Vert& p2);
-HE_Vert mostDistantFromPlane(HE_Vert* vertices, unsigned long const numPairs, HE_Face& face);
-std::shared_ptr<HE_Face> makeTriFace(std::shared_ptr<HalfEdge> he1, std::shared_ptr<HalfEdge> he2, std::shared_ptr<HalfEdge> he3);
-std::vector<HE_Face> makePyramid(std::shared_ptr<HE_Face> triBase, std::shared_ptr<HE_Vert> apex);
-void iterateHull(std::vector<HE_Face>& hullFaces);
-
 long int key = 0;
-std::unordered_map<long int, std::vector<HE_Vert> > facePoints;
 
-QuickHull::QuickHull(glm::vec3* points, int numVertices){
-    m_vertices = new HE_Vert[numVertices];
-    for(unsigned int i  = 0; i < numVertices; i++){
-        m_vertices[i].position = points[i];
-    }
-    m_numVertices = numVertices;
+QuickHull::QuickHull(vec3* points, unsigned int numVertices) : m_numVertices(numVertices), m_pointSet(points)
+{
+    m_mesh = std::make_shared<Mesh>(GL_TRIANGLES, DRAW_INDEXED);
+    /* not all points will be vertices on final mesh so final mesh will be created procedurally*/
 }
 
-QuickHull::~QuickHull(){
-    delete[] m_vertices;
+QuickHull::~QuickHull()
+{
+    //no - op
 }
 
-void QuickHull::genHull(){
-    HE_Vert* maxes = getMax(m_vertices, m_numVertices);
+void QuickHull::genHull()
+{
+    makePyramid();
+    /*HE_Vert* maxes = getMax(m_vertices, m_numVertices);
     std::pair<HE_Vert, HE_Vert> mostDist = mostDistantPoints(maxes, 6);
 
     HE_Vert thirdPoint = mostDistantFromLine(maxes, 6, mostDist.first, mostDist.second);
@@ -82,11 +73,40 @@ void QuickHull::genHull(){
         }
     }
     delete [] assigned;
-    //iterateHull();
+    //iterateHull();*/
 }
 
-std::vector<std::shared_ptr<HE_Face> > extrudeToPoint(HE_Vert& apex, std::vector<std::shared_ptr<HE_Vert> > verts, std::vector<std::shared_ptr<HalfEdge> > pairs){
-    std::vector<std::shared_ptr<HE_Face> > rVec;
+void QuickHull::extrude(const sp<HE_Face> base)
+{
+    vector<unsigned int> points = m_vertSets[base];
+    int farthest = -1;
+    double distance = 0;
+    for(int i = 0; i < points.size(); i++)
+    {
+      double curDist = getDistanceFromPlane(m_pointSet[points[i]], m_pointSet[base->edge->origin], base->normal);
+      if(curDist > distance)
+      {
+        distance = curDist;
+        farthest = i;
+      }
+    }
+    sp<HalfEdge> baseEdge = base->edge;
+    do {
+      auto edge = baseEdge->pair->next;
+      auto face = edge->face;
+      if(getDistanceFromPlane(m_pointSet[points[farthest]], m_pointSet[edge->origin], face->normal) > 0)
+      {
+        auto nF1 = makeTriFace();
+        auto nF2 = makeTriFace();
+        nF1->edge->pair = edge->pair;
+        edge->pair->pair = nF1->edge;
+        edge = edge->next;
+        nF2->edge->pair = edge->pair;
+        edge->pair->pair = nF1->edge;
+
+      }
+
+    } while(baseEdge != base->edge);
     unsigned int j = 0;
     for(unsigned int i = 0; i < verts.size(); i++){
         auto edge1 = std::make_shared<HalfEdge>();
@@ -108,9 +128,10 @@ std::vector<std::shared_ptr<HE_Face> > extrudeToPoint(HE_Vert& apex, std::vector
     }
     return rVec;
 }
-std::stack<std::shared_ptr<HE_Face> > faces;
-void QuickHull::iterateHull(){
-    for(std::vector<HE_Face>::iterator iter = m_hullFaces.begin(); iter != m_hullFaces.end(); ++iter){
+std::stack<sp<HE_Face> > faces;
+void QuickHull::iterateHull()
+{
+    for(vector<HE_Face>::iterator iter = m_hullFaces.begin(); iter != m_hullFaces.end(); ++iter){
         if(facePoints[iter->id].size() > 0) faces.push(std::make_shared<HE_Face>(*iter));
     }
     m_hullFaces.clear();
@@ -163,127 +184,144 @@ void QuickHull::iterateHull(){
         facePoints.erase(face->id);
     }
     facePoints.clear();
-
 }
 
-
-
-std::shared_ptr<Mesh> QuickHull::getHull(){
-    std::vector<Vertex> vertices;
-    for(std::vector<HE_Face>::iterator iter = m_hullFaces.begin(); iter != m_hullFaces.end(); ++iter){
-        std::shared_ptr<HalfEdge> edge = iter->edge;
-        for(unsigned int j = 0; j < 3; j++){
-            glm::vec3 pos = edge->origin->position;
-            vertices.emplace_back(Vertex(pos, glm::vec2(0,0)));
-            edge = edge->next;
-        }
-    }
-    return std::shared_ptr<Mesh>(new Mesh(GL_TRIANGLES, DRAW_BASIC));
-}
-
-std::shared_ptr<HE_Face> makeTriFace(std::shared_ptr<HalfEdge> he1, std::shared_ptr<HalfEdge> he2, std::shared_ptr<HalfEdge> he3){
+sp<HE_Face> makeTriFace(){
     auto face = std::make_shared<HE_Face>();
-    face->id = key++;
+    sp<HalfEdge> he1 = std::make_shared<HalfEdge>(nullptr, nullptr, nullptr, -1, face);
+    sp<HalfEdge> he2 = std::make_shared<HalfEdge>(nullptr, he1, nullptr, -1, face);
+    sp<HalfEdge> he3 = std::make_shared<HalfEdge>(he1, he2, nullptr, -1, face);
     face->edge = he1;
     he1->next = he2;
-    he2->next = he3;
-    he3->next = he1;
     he1->previous = he3;
     he2->previous = he1;
-    he3->previous = he2;
-    face->normal = glm::normalize(glm::cross(he1->next->origin->position - he1->origin->position,  he1->previous->origin->position - he1->origin->position ));
-    he1->face = face;
-    he2->face = face;
-    he3->face = face;
     return face;
 }
 
+void QuickHull::makePyramid(){
+    unsigned int maxes[6] = {0};
+    for(int i = 0; i < m_numVertices; i++)
+    {
+      if(m_pointSet[i].x < m_pointSet[maxes[0]].x) maxes[0] = i;
+      if(m_pointSet[i].y < m_pointSet[maxes[1]].y) maxes[1] = i;
+      if(m_pointSet[i].z < m_pointSet[maxes[2]].z) maxes[2] = i;
+      if(m_pointSet[i].x > m_pointSet[maxes[3]].x) maxes[3] = i;
+      if(m_pointSet[i].y > m_pointSet[maxes[4]].y) maxes[4] = i;
+      if(m_pointSet[i].z > m_pointSet[maxes[5]].z) maxes[5] = i;
+    }
+    //Find the two farthest points in the set
+    double distance = 0.0;
+    pair<unsigned int, unsigned int> mostDist;
+    for(int i = 0; i < 6; i++)
+    {
+      for(int j = 0; j < 6; j++)
+      {
+        if (i == j) continue;
+        if(glm::distance(m_pointSet[maxes[i]], m_pointSet[maxes[j]]) > distance){
+            distance = glm::distance(m_pointSet[maxes[i]], m_pointSet[maxes[j]]);
+            mostDist = pair<unsigned int, unsigned int>(maxes[i], maxes[j]);
+        }
+      }
+    }
 
-std::vector<HE_Face> makePyramid(std::shared_ptr<HE_Face> triBase, std::shared_ptr<HE_Vert> apex){
-    std::vector<HE_Face> faces;
-    std::shared_ptr<HalfEdge> edge = triBase->edge;
-    do{
-        auto pair = std::make_shared<HalfEdge>();
-        auto apexToV1= std::make_shared<HalfEdge>();
-        auto v0ToApex= std::make_shared<HalfEdge>();
-        pair->origin = edge->next->origin;
-        apexToV1->origin = apex;
-        v0ToApex->origin = edge->origin;
+    //Build the largest triangle possible with those verts
+    distance = 0.0;
+    unsigned int farthestFromLine;
+    vec3 p1 = m_pointSet[mostDist.first], p2 = m_pointSet[mostDist.second];
+    for(int i = 0; i < 6; i++)
+    {
+        if(maxes[i] == mostDist.first || maxes[i] == mostDist.second) continue;
+        vec3 p3 = m_pointSet[maxes[i]];
+        if(getDistanceFromLine(p3, p1, p2) > distance)
+        {
+            distance = getDistanceFromLine(p3, p1, p2);
+            farthestFromLine = maxes[i];
+        }
+    }
 
-        //ordering is important, just trust me on this one
-        edge->pair = std::shared_ptr<HalfEdge>(pair);
-        pair->pair = edge;
-        faces.push_back(*makeTriFace(pair, v0ToApex, apexToV1));
-        edge = edge->next;
+    //These are going to be part of the hull so add them to mesh.
+    //Probably add some default texture coords when I get around to adding support for passing UV function to meshes
+    m_mesh->addVertex(new Vertex(m_pointSet[mostDist.first], vec2(0,0)));
+    m_mesh->addVertex(new Vertex(m_pointSet[mostDist.second], vec2(0,0)));
+    m_mesh->addVertex(new Vertex(m_pointSet[farthestFromLine], vec2(0,0)));
+    //construct the half edges and face
+    vec3 normal = glm::normalize(glm::cross(m_pointSet[mostDist.first] - m_pointSet[mostDist.second], m_pointSet[farthestFromLine] - m_pointSet[mostDist.second]));
+    sp<HE_Face> face = std::make_shared<HE_Face>(normal, nullptr);
+    sp<HalfEdge> edge1 = std::make_shared<HalfEdge>(nullptr, nullptr, nullptr, 0, face);
+    sp<HalfEdge> edge2 = std::make_shared<HalfEdge>(nullptr, edge1, nullptr, 1, face);
+    sp<HalfEdge> edge3 = std::make_shared<HalfEdge>(edge1, edge2, nullptr, 2, face);
+    //edges form internal loop so it doensnt matter which one we assign to the face
+    face->edge = edge1;
+    //filling in missing fields. Need to assign pairings later when pyramid is formed.
+    edge1->next = edge2; edge1->previous = edge3;
+    edge2->next = edge3;
+    m_hullFaces.push_back(face);
 
-    }while(edge != triBase->edge);
-    faces.push_back(*triBase);
-    return faces;
+    //Find the farthest point from the triangle plane, this searches all points in point set
+    unsigned int farthestFromPlane = mostDistantFromPlane(vec3(mostDist.first, mostDist.second, farthestFromLine), m_pointSet[farthestFromLine], normal);
+    std::cout << mostDist.first << " " << mostDist.second << " " << farthestFromLine << " " << farthestFromPlane << std::endl;
+    m_mesh->addVertex(new Vertex(m_pointSet[farthestFromPlane], vec2(0,0)));
+    sp<HalfEdge> baseEdge = edge1;
 
+    do
+    {
+      vec3 normal = glm::normalize(glm::cross(m_pointSet[farthestFromPlane] - m_pointSet[baseEdge->origin], m_pointSet[baseEdge->next->origin] - m_pointSet[baseEdge->origin]));
+      auto curFace = std::make_shared<HE_Face>(normal, nullptr);
+      sp<HalfEdge> e1 = std::make_shared<HalfEdge>(nullptr, nullptr, nullptr, baseEdge->next->origin, curFace);
+      sp<HalfEdge> e2 = std::make_shared<HalfEdge>(nullptr, e1, nullptr, baseEdge->origin, curFace);
+      sp<HalfEdge> e3 = std::make_shared<HalfEdge>(e1, e2, nullptr, farthestFromPlane, curFace);
+      curFace->edge = e1;
+      //filling in missing fields. Need to assign pairings later when pyramid is formed.
+      e1->next = e2; e1->previous = e3;
+      e2->next = e3;
+      baseEdge->pair = e1;
+      baseEdge = baseEdge->next;
+      m_hullFaces.push_back(curFace);
+    }while(baseEdge != edge1);
+    //pairing up half edges
+    for(int i = 0; i < 2; i++)
+    {
+      baseEdge->pair->previous->pair = baseEdge->next->pair->next;
+      baseEdge->next->pair->next->pair = baseEdge->pair->previous;
+    }
+    vector<bool> assigned;
+    assigned.reserve(m_numVertices);
+    for(auto face: m_hullFaces)
+    {
+      for(int i = 0; i < m_numVertices; i++)
+      {
+        if(!assigned[i] && getDistanceFromPlane() > 0)
+        {
+          assigned[i] = true;
+          m_vertSets[face].push_back(i);        }
+      }
+    }
 }
 
-double getDistanceFromLine(const glm::vec3& point, const glm::vec3& p1, const glm::vec3& p2){
+double QuickHull::getDistanceFromLine(const vec3& point, const vec3& p1, const vec3& p2){
     return glm::length(glm::cross(p2 - p1, p1 - point))/ glm::length(p2 - p1);
 }
 
-double getDistanceFromPlane (const glm::vec3& point, HE_Vert& vertex, const glm::vec3& normal){
-    glm::normalize(normal);
-    glm::vec3 pointFromPlane = point - vertex.position;
+double QuickHull::getDistanceFromPlane (const vec3& point, const vec3& pointOnPlane , const vec3& normal)
+{
+    glm::vec3 pointFromPlane = point - pointOnPlane;
     return glm::length((glm::dot(pointFromPlane, normal)/glm::length(normal)) * normal);
 }
 
-/* 0 is x, 1 is y, 2 is z
-   first is max, second is min*/
-HE_Vert* getMax(HE_Vert* vertices, const unsigned long numVertices){
-    static HE_Vert rVertices[6];
-    for(unsigned int i = 0; i < numVertices; i++){
-        HE_Vert cur = vertices[i];
-        //maximums
-        if(cur.position.x > rVertices[0].position.x) rVertices[0] = cur;
-        if(cur.position.y > rVertices[1].position.y) rVertices[1] = cur;
-        if(cur.position.z > rVertices[2].position.z) rVertices[2] = cur;
-        //std::cout<< numVertices << std::endl;
-        //minimums
-        if(cur.position.x < rVertices[3].position.x) rVertices[3] = cur;
-        if(cur.position.y < rVertices[4].position.y) rVertices[4] = cur;
-        if(cur.position.z < rVertices[5].position.z) rVertices[5] = cur;
-    }
-    return &rVertices[0];
-}
-
-std::pair<HE_Vert, HE_Vert> mostDistantPoints(HE_Vert vertices[], const int numPairs){
+unsigned int QuickHull::mostDistantFromPlane(const vec3& baseIndices, const vec3& pointOnPlane, const vec3& normal)
+{
     double distance = 0;
-    std::pair<HE_Vert, HE_Vert> rPair;
-    for(int i = 0; i < numPairs; i++){
-        if(glm::distance(vertices[i].position, vertices[numPairs - i].position) > distance){
-            distance = glm::distance(vertices[i].position, vertices[numPairs - i - 1].position);
-            rPair = std::pair<HE_Vert, HE_Vert>(vertices[i], vertices[numPairs - i - 1]);
-        }
+    unsigned int rIndex = -1;
+    for(int i = 0; i < m_numVertices; i++)
+    {
+      if(i == baseIndices.x || i == baseIndices.y || i == baseIndices.z) continue;
+      double curDistance = getDistanceFromPlane(m_pointSet[i], pointOnPlane , normal);
+      if(curDistance > distance)
+      {
+        distance = curDistance;
+        rIndex = i;
+      }
     }
-    return rPair;
+    return rIndex;
 }
-
-HE_Vert mostDistantFromLine(HE_Vert* vertices,int numVerts, HE_Vert& p1, HE_Vert& p2){
-    double distance = 0;
-    HE_Vert rVert;
-    for(int i = 0; i < numVerts; i++){
-        if(getDistanceFromLine(vertices[i].position, p1.position, p2.position) > distance){
-            distance = getDistanceFromLine(vertices[i].position, p1.position, p2.position);
-            rVert = vertices[i];
-        }
-    }
-    return rVert;
-}
-
-HE_Vert mostDistantFromPlane(HE_Vert* vertices, unsigned long int numVerts, HE_Face& face){
-    double distance = 0;
-    HE_Vert rVert;
-    for(int i = 0; i < numVerts; i++){
-        if(getDistanceFromPlane(vertices[i].position, *face.edge->origin , face.normal) > distance){
-            distance = getDistanceFromPlane(vertices[i].position, *face.edge->origin , face.normal);
-            rVert = vertices[i];
-        }
-    }
-    return rVert;
-}
-}
+}//Asuna namespace

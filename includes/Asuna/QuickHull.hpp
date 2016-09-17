@@ -9,24 +9,31 @@
 
 #include <iostream>
 #include <assert.h>
-#include <vector>
 #include "Mesh.hpp"
+#include "Common.hpp"
 
 namespace Asuna{
 
 class QuickHull{
 public:
-    QuickHull(glm::vec3* points, int numVertices);
+    QuickHull(vec3* points, unsigned int numVertices);
     virtual ~QuickHull();
     void genHull();
-    void iterateHull();
-    std::shared_ptr<Mesh> getHull();
+    inline sp<Mesh> getHull() { return m_mesh; }
 
 private:
-    unsigned long m_numVertices;
+    unsigned long                    m_numVertices;
+    sp<Mesh>                         m_mesh;
+    vector<sp<HE_Face>>              m_hullFaces;
+    vec3*                            m_pointSet;
+    map<sp<HE_Face>, vector<unsigned int>> m_vertSets;
 
-    std::vector<HE_Face> m_hullFaces;
-    HE_Vert* m_vertices;
+    double getDistanceFromPlane(const vec3& point, const vec3& pointOnPlane , const vec3& normal);
+    double getDistanceFromLine(const vec3& point, const vec3& p1, const vec3& p2);
+    unsigned int mostDistantFromPlane(const vec3& baseIndices, const vec3& pointOnPlane, const vec3& normal);
+    void makeTriFace(std::shared_ptr<HalfEdge> he1, std::shared_ptr<HalfEdge> he2, std::shared_ptr<HalfEdge> he3);
+    void makePyramid();
+    void extrude(const sp<HE_Face> base);
 
 };
 }

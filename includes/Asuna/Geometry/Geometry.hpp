@@ -31,11 +31,12 @@ public:
   inline sp<Mesh> getMesh() { return m_mesh; }
 
 protected:
-  Geometry(const vec3& position = vec3(0,0,0)): m_position(position) {}
+  Geometry(const vec3 position): m_position(position) {}
   virtual void genMesh() = 0;
+  void normalize(Vertex* vertex, float length);
   sp<Mesh> m_mesh;
-private:
   vec3 m_position;
+private:
 };
 
 }

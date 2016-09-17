@@ -34,6 +34,7 @@ Mesh::Mesh(GLenum drawType, Asuna_Draw_Type renderType) : m_primType(drawType), 
 
 Mesh::~Mesh()
 {
+  printf("Mesh destructor");
   for(auto vert:m_vertices)
   {
     printf("Deleting vertices");
@@ -59,7 +60,6 @@ void Mesh::addQuad(unsigned int index1, unsigned int index2, unsigned int index3
 
 void Mesh::addVertex(Vertex* vert)
 {
-  *vert->getPos() += m_offset;
   m_vertices.push_back(vert);
 }
 
@@ -104,7 +104,7 @@ void Mesh::mapBuffers()
 
   for(auto vert: m_vertices)
   {
-      positions.push_back(*vert->getPos());
+      positions.push_back(*vert->getPos() + m_offset);
       textCoords.push_back(*vert->getTextCoord());
   }
 
@@ -126,10 +126,9 @@ void Mesh::mapBuffers()
 
   if(m_renderMask == DRAW_INDEXED)
   {
-    printf("Mapping element array buffer\n");
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vertexArrayBuffers[INDICES_VB]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned int), &m_indices[0], GL_STATIC_DRAW);
-    CheckOpenGLError("Mesh: glBindVuffer/glBufferData", 107);
+    CheckOpenGLError("Mesh: glBindBuffer/glBufferData", 107);
   }
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   glBindVertexArray(0);

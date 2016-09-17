@@ -36,11 +36,9 @@ int main(int argc, const char * argv[])
     pObj.bindAttribLocation(1, "texCoord");
     pObj.createFragmentShader("./shaders/basicShader.fs");
     pObj.link();
-    printf("Initializing demo handler\n");
-    demoHandler.init(SPHERE_DEMO);
+    demoHandler.init(QUICKHULL_DEMO);
 
     /***********'draw loop'**********/
-    printf("Starting draw loop\n");
     while(!display.isClosed())
     {
       display.clear(0.5f, 0.6f, 0.55f, 1.0f);
