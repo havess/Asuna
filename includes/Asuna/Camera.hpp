@@ -21,13 +21,15 @@ class Camera{
 public:
     Camera(): m_perspective(0), m_position(0), m_forward(0), m_up(0){}
     Camera(const vec3& pos, float fov, float aspect, float zNear, float zFar, const vec3& forward = vec3(0,0,1), const vec3& up = vec3(0,1,0)):
-            m_perspective(glm::perspective(fov, aspect, zNear, zFar)), m_position(pos), m_forward(forward), m_up(up) {}
+            m_perspective(glm::perspective(fov, aspect, zNear, zFar)), m_position(pos), m_forward(-pos), m_up(up), m_right(glm::cross(forward, up)) {}
 
     inline mat4 getViewProjection() const{
         return m_perspective * glm::lookAt(m_position, m_position + m_forward, m_up);
     }
 
-    inline vec3 getForward() const{return m_forward;};
+    inline vec3* getForward() {return &m_forward;};
+    inline vec3* getUp() { return &m_up;};
+    inline vec3* getRight() { return &m_right;};
 
 protected:
 private:
@@ -35,6 +37,7 @@ private:
     vec3 m_position;
     vec3 m_forward;
     vec3 m_up;
+    vec3 m_right;
 
 };
 }

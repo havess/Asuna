@@ -6,7 +6,7 @@
 //  Copyright © 2016 Sam Haves. All rights reserved.
 //
 
-#include "../includes/Asuna/QuickHull.hpp"
+#include "../../includes/Asuna/Geometry/QuickHull.hpp"
 #include <stack>
 #include <unordered_map>
 
@@ -103,10 +103,10 @@ void QuickHull::extrude(const sp<HE_Face> base)
         edge = edge->next;
         nF2->edge->pair = edge->pair;
         edge->pair->pair = nF1->edge;
-
+        //normals!
       }
-
     } while(baseEdge != base->edge);
+    /*
     unsigned int j = 0;
     for(unsigned int i = 0; i < verts.size(); i++){
         auto edge1 = std::make_shared<HalfEdge>();
@@ -126,10 +126,10 @@ void QuickHull::extrude(const sp<HE_Face> base)
         rVec[i]->edge->next->pair = (i == rVec.size() - 1) ? rVec[0]->edge->previous:rVec[i+1]->edge->previous;
         rVec[i]->edge->previous->pair = (i == 0) ? rVec[rVec.size() - 1]->edge->next:rVec[i-1]->edge->next;
     }
-    return rVec;
+    return rVec;*/
 }
 std::stack<sp<HE_Face> > faces;
-void QuickHull::iterateHull()
+/*void QuickHull::iterateHull()
 {
     for(vector<HE_Face>::iterator iter = m_hullFaces.begin(); iter != m_hullFaces.end(); ++iter){
         if(facePoints[iter->id].size() > 0) faces.push(std::make_shared<HE_Face>(*iter));
@@ -184,10 +184,10 @@ void QuickHull::iterateHull()
         facePoints.erase(face->id);
     }
     facePoints.clear();
-}
+}*/
 
-sp<HE_Face> makeTriFace(){
-    auto face = std::make_shared<HE_Face>();
+sp<HE_Face> QuickHull::makeTriFace(){
+    auto face = std::make_shared<HE_Face>(vec3(), nullptr);
     sp<HalfEdge> he1 = std::make_shared<HalfEdge>(nullptr, nullptr, nullptr, -1, face);
     sp<HalfEdge> he2 = std::make_shared<HalfEdge>(nullptr, he1, nullptr, -1, face);
     sp<HalfEdge> he3 = std::make_shared<HalfEdge>(he1, he2, nullptr, -1, face);
@@ -199,6 +199,7 @@ sp<HE_Face> makeTriFace(){
 }
 
 void QuickHull::makePyramid(){
+  std::cout << "Making pyramid?" << std::endl;
     unsigned int maxes[6] = {0};
     for(int i = 0; i < m_numVertices; i++)
     {
@@ -290,12 +291,20 @@ void QuickHull::makePyramid(){
     {
       for(int i = 0; i < m_numVertices; i++)
       {
-        if(!assigned[i] && getDistanceFromPlane() > 0)
+        if(!assigned[i] && getDistanceFromPlane(m_pointSet[i], m_pointSet[face->edge->origin], face->normal) > 0)
         {
           assigned[i] = true;
-          m_vertSets[face].push_back(i);        }
+          m_vertSets[face].push_back(i);
+        }
       }
     }
+
+    m_mesh->addTriangle(0,1,2);
+    m_mesh->addTriangle(0,2,3);
+    m_mesh->addTriangle(0,1,3);
+    m_mesh->addTriangle(1,2,3);
+    m_mesh->mapBuffers();
+
 }
 
 double QuickHull::getDistanceFromLine(const vec3& point, const vec3& p1, const vec3& p2){

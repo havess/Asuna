@@ -9,7 +9,6 @@
 
 #include "Common.hpp"
 
-
 enum Asuna_Draw_Type
 {
   DRAW_BASIC,
@@ -64,10 +63,12 @@ class Mesh
 public:
     Mesh(GLenum drawType, Asuna_Draw_Type renderMask);
     virtual ~Mesh();
+    /* for now these assume that the user passed the proper prim type */
+    void addLine(unsigned int index1, unsigned int index2);
     void addTriangle(unsigned int index1, unsigned int index2, unsigned int index3);
     void addQuad(unsigned int index1, unsigned int index2, unsigned int index3, unsigned int index4);
     void addVertex(Vertex* vert);
-    void addIndex(const unsigned int index);
+    void addIndex(unsigned int index);
     void mapBuffers();
     void draw();
     void drawIndexed();
@@ -75,8 +76,8 @@ public:
     unsigned int getStride();
 
     void setOffset(const vec3& offset) { m_offset = offset;}
-    inline void eraseIndices(const unsigned int a, const unsigned int b) { m_indices.erase(m_indices.begin() + a, m_indices.begin() + b );}
-    inline void eraseVertices(const unsigned int a, const unsigned int b) { m_vertices.erase(m_vertices.begin() + a, m_vertices.begin() + b) ;}
+    inline void eraseIndices(unsigned int a, unsigned int b) { m_indices.erase(m_indices.begin() + a, m_indices.begin() + b );}
+    inline void eraseVertices(unsigned int a, unsigned int b) { m_vertices.erase(m_vertices.begin() + a, m_vertices.begin() + b) ;}
     inline int getNumIndices() { return m_indices.size();}
     inline int getNumVertices() { return m_vertices.size();}
     inline Vertex* getVertex(unsigned int index) { return m_vertices[index]; }

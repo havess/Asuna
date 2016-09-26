@@ -8,10 +8,10 @@
 #include <stdio.h>
 #include <iostream>
 
-#include "../../includes/Asuna/Asuna.hpp"
+#include "../../includes/Asuna/Geometry/Arrow.hpp"
 
 namespace Asuna{
-  void Arrow::genMesh()
+  /*void Arrow::genMesh()
   {
     Vertex vertices[] =
     {
@@ -24,5 +24,5 @@ namespace Asuna{
     };
 
     m_mesh = std::make_shared<Mesh>(GL_LINES, DRAW_BASIC);
-  }
+  }*/
 }

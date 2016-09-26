@@ -22,12 +22,12 @@ using vector = std::vector<T>;
 int main(int argc, const char * argv[])
 {
     /*********inits**************/
-    Asuna::Display display(vec2(1000,700), "3D QuickHull", true);
-    Asuna::Input input;
+    Asuna::Display display(vec2(2000,1600), "3D QuickHull", true);
+    Asuna::Input input(Asuna::ALL_INPUT);
     Asuna::DemoHandler demoHandler;
 
     Asuna::Transform transform;
-    Asuna::Camera camera(vec3(-200,-300,200), 70.0f, display.getAspectRatio(), 0.0f, 2000.0f, vec3(200,300,-200));
+    Asuna::Camera camera(vec3(0,0,-1), 70.0f, display.getAspectRatio(), 0.0f, 2000.0f, vec3(0,0,1), vec3(0,1,0));
 
     /**********setup************/
     Asuna::ProgramObject pObj;
@@ -36,6 +36,10 @@ int main(int argc, const char * argv[])
     pObj.bindAttribLocation(1, "texCoord");
     pObj.createFragmentShader("./shaders/basicShader.fs");
     pObj.link();
+    input.bindTransform(&transform);
+    input.bindForward(camera.getForward());
+    input.bindUp(camera.getUp());
+    input.bindRight(camera.getRight());
     demoHandler.init(QUICKHULL_DEMO);
 
     /***********'draw loop'**********/
@@ -43,7 +47,7 @@ int main(int argc, const char * argv[])
     {
       display.clear(0.5f, 0.6f, 0.55f, 1.0f);
       pObj.bind();
-      input.applyKeyPresses(transform, camera);
+      input.poll();
       pObj.update(transform, camera);
       demoHandler.execute();
       //this needs to be called last

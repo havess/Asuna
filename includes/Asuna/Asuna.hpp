@@ -19,7 +19,7 @@
 #include "HUD/HUD.hpp"
 #include "Input.hpp"
 #include "Mesh.hpp"
-#include "Quickhull.hpp"
+#include "Geometry/Quickhull.hpp"
 #include "ProgramObject.hpp"
 #include "Texture.hpp"
 #include "Transform.hpp"

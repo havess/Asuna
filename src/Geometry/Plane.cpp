@@ -1,3 +1,10 @@
+//
+//  Plane.cpp
+//  Convex Hull
+//
+//  Copyright © 2015 Sam Haves. All rights reserved.
+//
+
 #include <stdio.h>
 #include <iostream>
 
@@ -14,6 +21,6 @@ namespace Asuna{
         Vertex(vec3(1,-1,0), vec2(1, 0))
     };
 
-    m_mesh = std::make_shared<Mesh>(Mesh(GL_QUADS, DRAW_BASIC));
+    m_mesh = std::make_shared<Mesh>(GL_QUADS, DRAW_INDEXED);
   }
 }

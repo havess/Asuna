@@ -12,7 +12,7 @@
 
 namespace Asuna{
 
-void Geometry::::normalize(Vertex* vert, float length)
+void Geometry::normalize(Vertex* vert, float length)
 {
   vec3* pos = vert->getPos();
   double len = sqrt(pos->x * pos->x + pos->y * pos->y + pos->z * pos->z);

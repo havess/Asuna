@@ -8,40 +8,43 @@
 #pragma once
 
 #include <iostream>
+#include <SDL2/SDL.h>
 #include "Transform.hpp"
 #include "Camera.hpp"
 
 namespace Asuna{
 
+enum InputType
+{
+  KEYBOARD,
+  MOUSE,
+  ALL_INPUT
+};
+
 class Input{
 public:
-    void applyKeyPresses(Transform& transform, Camera& camera){
+  Input(InputType input);
+  void poll();
 
-        const Uint8 *state = SDL_GetKeyboardState(NULL);
+  inline void lock(InputType type) { m_inputState[type] = false; }
+  inline void unlock(InputType type) { m_inputState[type] = true; }
+  inline void setInputType(InputType type) { m_type = type; }
+  inline void bindTransform(Transform* transform) { m_transform = transform; }
+  inline void bindForward(vec3* forward) { m_forward = forward; }
+  inline void bindUp(vec3* up) { m_up = up; }
+  inline void bindRight(vec3* right) { m_right = right; }
+private:
+  void handleWindowEvent(const SDL_Event& e);
+  void handleMouseEvent(const SDL_Event& e);
+  void handleKeyboardState();
+  Transform*  m_transform;
+  vec3*       m_forward;
+  vec3*       m_up;
+  vec3*       m_right;
+  bool        m_inputState[ALL_INPUT] = {false};
+  InputType   m_type = ALL_INPUT;
 
-        if(state[SDL_SCANCODE_RIGHT] && state[SDL_SCANCODE_SPACE]){
-            transform.getRot().z += 0.05f;
-        }else if (state[SDL_SCANCODE_RIGHT]) {
-            transform.getRot().y += 0.05f;
-        }
-        if(state[SDL_SCANCODE_LEFT] && state[SDL_SCANCODE_SPACE]){
-            transform.getRot().z -= 0.05f;
-        }else if (state[SDL_SCANCODE_LEFT]) {
-            transform.getRot().y -= 0.05f;
-        }
-        if (state[SDL_SCANCODE_DOWN]) {
-            transform.getRot().x -= 0.05f;
-        }
-        if (state[SDL_SCANCODE_UP]) {
-            transform.getRot().x += 0.05f;
-        }
-        if (state[SDL_SCANCODE_Z]) {
-            transform.getPos() += 0.04f * camera.getForward();
-        }
-        if (state[SDL_SCANCODE_X]) {
-            transform.getPos() -= 0.04f * camera.getForward();
-        }
-
-    }
+  void PrintKeyInfo(SDL_KeyboardEvent *key);
+  void PrintModifiers(long mod);
 };
 }

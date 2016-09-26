@@ -2,6 +2,7 @@
 
 attribute vec3 position;
 attribute vec2 texCoord;
+attribute vec3 color;
 
 varying vec2 texCoord0;
 

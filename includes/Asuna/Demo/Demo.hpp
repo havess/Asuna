@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "../Geometry/Sphere.hpp"
-#include "../QuickHull.hpp"
+#include "../Geometry/QuickHull.hpp"
 #include "../Common.hpp"
 #include <cstdlib>
 

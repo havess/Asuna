@@ -8,7 +8,6 @@
 /*
 This is the HUD class implementation.
 
-MORE DOCUMENTATION TO COME, CALM YOUR SHIT!!
 */
 
 #include "GL/glew.h"

@@ -13,6 +13,7 @@
 #include <vector>
 #include <map>
 #include "glm/glm.hpp"
+#include "glm/gtc/quaternion.hpp"
 #include <GL/glew.h>
 
 void CheckOpenGLError(const char* fname, int line);
@@ -31,6 +32,7 @@ using vec3 = glm::vec3;
 using vec2 = glm::vec2;
 using mat4 = glm::mat4;
 using mat3 = glm::mat3;
+using quat = glm::quat;
 template<typename T>
 using vector = std::vector<T>;
 template<typename T, typename N>

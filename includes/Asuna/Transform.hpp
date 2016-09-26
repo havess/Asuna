@@ -8,29 +8,26 @@
 #pragma once
 
 #include <iostream>
+#include <SDL2/SDL.h>
+#include "Common.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
-
-typedef glm::mat4 mat4;
-typedef glm::vec3 vec3;
+#include "glm/gtx/quaternion.hpp"
 
 namespace Asuna{
 
-class Transform{
+class Transform
+{
 public:
-
     Transform(const vec3& pos = vec3(), const vec3& rot  = vec3(), const vec3& scale  = vec3(1.0f, 1.0f, 1.0f)): m_pos(pos),m_rot(rot),m_scale(scale) {}
 
-    inline mat4 getModel() const{
-        mat4 posMatrix = glm::translate(m_pos);
-        mat4 rotXMatrix = glm::rotate(m_rot.x, vec3(1,0,0));
-        mat4 rotYMatrix = glm::rotate(m_rot.y, vec3(0,1,0));
-        mat4 rotZMatrix = glm::rotate(m_rot.z, vec3(0,0,1));
-        mat4 scaleMatrix = glm::scale(m_scale);
+    inline mat4 getModel() const
+    {
+      mat4 posMatrix = glm::translate(m_pos);
+      mat4 rotMatrix = toMat4(m_quat * angleAxis((float) SDL_GetTicks()/10000, vec3(0,0,1)));
+      mat4 scaleMatrix = glm::scale(m_scale);
 
-        mat4 rotMatrix = rotZMatrix * rotYMatrix * rotXMatrix;
-
-        return posMatrix * rotMatrix * scaleMatrix;
+      return posMatrix * rotMatrix * scaleMatrix;
     }
 
     inline vec3& getPos(){return m_pos;}
@@ -39,11 +36,13 @@ public:
 
     inline void setPos(const vec3& pos){m_pos = pos;}
     inline void setRot(const vec3& rot){m_rot = rot;}
+    inline void concatRotation(const quat& quat){ m_quat *= quat; }
     inline void setScale(const vec3& scale){m_scale = scale;}
 protected:
 private:
     vec3 m_pos;
     vec3 m_rot;
     vec3 m_scale;
+    quat m_quat;
 };
 }

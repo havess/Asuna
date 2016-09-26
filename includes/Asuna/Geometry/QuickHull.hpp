@@ -9,8 +9,8 @@
 
 #include <iostream>
 #include <assert.h>
-#include "Mesh.hpp"
-#include "Common.hpp"
+#include "../Mesh.hpp"
+#include "../Common.hpp"
 
 namespace Asuna{
 
@@ -31,7 +31,7 @@ private:
     double getDistanceFromPlane(const vec3& point, const vec3& pointOnPlane , const vec3& normal);
     double getDistanceFromLine(const vec3& point, const vec3& p1, const vec3& p2);
     unsigned int mostDistantFromPlane(const vec3& baseIndices, const vec3& pointOnPlane, const vec3& normal);
-    void makeTriFace(std::shared_ptr<HalfEdge> he1, std::shared_ptr<HalfEdge> he2, std::shared_ptr<HalfEdge> he3);
+    sp<HE_Face> makeTriFace();
     void makePyramid();
     void extrude(const sp<HE_Face> base);
 
